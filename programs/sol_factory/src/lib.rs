@@ -44,21 +44,20 @@ pub mod sol_factory {
         ctx: Context<CreateNft>,
         id: u64,
         reference: String,
-        collection: Pubkey,
-        uri: String,
         image: String,
         seed: u64,
         model_name: String,
-        model_hash: String
+        model_hash: String,
+        uri: String,
     ) -> Result<()> {
         ctx.accounts.create(
             id,
             reference,
-            uri,
             image,
             seed,
             model_name,
             model_hash,
+            uri,
             ctx.bumps
         )
     }
