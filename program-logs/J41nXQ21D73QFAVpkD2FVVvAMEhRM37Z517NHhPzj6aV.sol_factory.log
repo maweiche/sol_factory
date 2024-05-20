@@ -1,0 +1,102 @@
+Streaming transaction logs mentioning J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV. Confirmed commitment
+Transaction executed in slot 46051:
+  Signature: 46uCHx2uQY9Z2ipL9Jnt5n5yL7JKEYXcZ4L69YnzNY21AWJudvuwRjFD8R4WvPNe8XwhuxcnWNjr7Q4G7d73M7UB
+  Status: Ok
+  Log Messages:
+    Program ComputeBudget111111111111111111111111111111 invoke [1]
+    Program ComputeBudget111111111111111111111111111111 success
+    Program J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV invoke [1]
+    Program log: Instruction: CreatePlaceholder
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: Instruction: InitializePermanentDelegate
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 2397 of 269706 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: Instruction: InitializeMintCloseAuthority
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 2570 of 265457 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: MetadataPointerInstruction::Initialize
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 2568 of 260904 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: Instruction: InitializeMint2
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 4229 of 256568 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: TokenMetadataInstruction: Initialize
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 10192 of 249467 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: TokenMetadataInstruction: UpdateField
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 12517 of 236810 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: TokenMetadataInstruction: UpdateField
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 13803 of 221883 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: TokenMetadataInstruction: UpdateField
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 15304 of 205590 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: TokenMetadataInstruction: UpdateField
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 16551 of 187871 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV consumed 129380 of 299850 compute units
+    Program J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV success
+Transaction executed in slot 46086:
+  Signature: 51LPHSXTae2aDCp58cHn5s1gCDn5X9NMai2obKP1bY6ZP5CF3HnkvWvNyDnho3gAYip1ciKsNpLyeKZUAxxBnV96
+  Status: Ok
+  Log Messages:
+    Program J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV invoke [1]
+    Program log: Instruction: BuyPlaceholder
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL invoke [2]
+    Program log: Create
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [3]
+    Program log: Instruction: GetAccountDataSize
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 3087 of 171968 compute units
+    Program return: TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb qgAAAAAAAAA=
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program 11111111111111111111111111111111 invoke [3]
+    Program 11111111111111111111111111111111 success
+    Program log: Initialize the associated token account
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [3]
+    Program log: Instruction: InitializeImmutableOwner
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 1924 of 163951 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [3]
+    Program log: Instruction: InitializeAccount3
+    Program log: Warning: Mint has a permanent delegate, so tokens in this account may be seized at any time
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 5553 of 159636 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL consumed 23578 of 177357 compute units
+    Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: Instruction: MintTo
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 5584 of 151406 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: Instruction: SetAuthority
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 3564 of 142011 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV consumed 63325 of 200000 compute units
+    Program J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV success
+Transaction executed in slot 46119:
+  Signature: 3H6WN8SCAFRMSXjZT56zA2tjcxbwmTjEF13QTe99Vo5jSa1oRwxVCPhmNZZi6hTAvwSAJFfeAWBc8ZrwrDvzfDvs
+  Status: Ok
+  Log Messages:
+    Program J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV invoke [1]
+    Program log: Instruction: BurnPlaceholder
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [2]
+    Program log: Instruction: Burn
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 5802 of 184005 compute units
+    Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb success
+    Program J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV consumed 22727 of 200000 compute units
+    Program J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV success

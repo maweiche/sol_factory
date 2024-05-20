@@ -12,8 +12,8 @@ pub use anchor_spl::token_2022::Token2022;
 
 pub use spl_token_2022::{
     extension::ExtensionType,
-    instruction::{initialize_mint_close_authority, initialize_mint2},
-    extension::metadata_pointer::instruction::initialize as initialize_metadata_pointer
+    instruction::{initialize_mint_close_authority, initialize_permanent_delegate, initialize_mint2},
+    extension::metadata_pointer::instruction::initialize as initialize_metadata_pointer,
 };
 
 pub use spl_token_metadata_interface::{
@@ -22,11 +22,12 @@ pub use spl_token_metadata_interface::{
 };
 
 
-pub use crate::state::{Collection, Admin, AiNft, Attributes};
+pub use crate::state::{Collection, Admin, Placeholder};
+pub use crate::errors::BuyingError;
 
 #[derive(Accounts)]
 #[instruction(id: u64)]
-pub struct CreateNft<'info> {
+pub struct CreatePlaceholder<'info> {
     #[account(mut)]
     pub admin: Signer<'info>,
     #[account(
@@ -43,16 +44,16 @@ pub struct CreateNft<'info> {
     #[account(
         init,
         payer = admin,
-        seeds = [b"ainft", collection.key().as_ref(), id.to_le_bytes().as_ref()],
+        seeds = [b"placeholder", collection.key().as_ref(), id.to_le_bytes().as_ref()],
         bump,
-        space = AiNft::INIT_SPACE + collection.reference.len(),
+        space = Placeholder::INIT_SPACE + collection.reference.len() + collection.name.len() + collection.symbol.len() + 8 + 8,
     )] 
-    pub nft: Account<'info, AiNft>,
+    pub placeholder: Account<'info, Placeholder>,
 
     /// CHECK: this is fine since we are handling all the checks and creation in the program.
     #[account(
         mut,
-        seeds = [b"mint", nft.key().as_ref()],
+        seeds = [b"mint", placeholder.key().as_ref()],
         bump
     )]
     pub mint: UncheckedAccount<'info>,
@@ -71,25 +72,27 @@ pub struct CreateNft<'info> {
     pub system_program: Program<'info, System>,
 }
 
-impl<'info> CreateNft<'info> {
+impl<'info> CreatePlaceholder<'info> {
     pub fn create(
         &mut self,
         id: u64,
         uri: String,
-        name: String,
-        attributes: Vec<Attributes>,
-        bumps: CreateNftBumps,
+        bumps: CreatePlaceholderBumps,
     ) -> Result<()> {
 
-        self.nft.set_inner(
-            AiNft {
+        // require!(
+        //     self.collection.sale_start_time <= Clock::get()?.unix_timestamp,
+        //     BuyingError::NotTimeYet
+        // );
+
+        self.placeholder.set_inner(
+            Placeholder {
                 id,
                 collection: self.collection.key(),
                 reference: self.collection.reference.clone(),
+                name: self.collection.name.clone(),
                 price: self.collection.price,
-                time_stamp: Clock::get()?.unix_timestamp,
-                inscription: "none".to_string(),
-                rank: self.collection.total_supply as u16,
+                time_stamp: Clock::get()?.unix_timestamp
             }
         );
 
@@ -99,37 +102,33 @@ impl<'info> CreateNft<'info> {
         let size = ExtensionType::try_calculate_account_len::<spl_token_2022::state::Mint>(
             &[
                 ExtensionType::MintCloseAuthority,
-                // ExtensionType::PermanentDelegate,
+                ExtensionType::PermanentDelegate,
                 ExtensionType::MetadataPointer,
-                // ExtensionType::TransferHook,
             ],
         ).unwrap();
 
         let metadata = TokenMetadata {
             update_authority: spl_pod::optional_keys::OptionalNonZeroPubkey::try_from(Some(self.auth.key())).unwrap(),
             mint: self.mint.key(),
-            name: name.to_string(),
-            symbol: self.collection.symbol.to_string(),
+            name: "Placeholder for".to_string() + &self.collection.name,
+            symbol: self.collection.symbol.clone(),
             uri,
-            additional_metadata: attributes.into_iter().map(|attr| (attr.key, attr.value)).collect(),
-                // vec![
-                // ("season".to_string(), "winter".to_string()),
-                // ("camera angle".to_string(), "low angle".to_string()),
-                // ("theme".to_string(), "nichijo".to_string()),
-                // ("seed".to_string(), "3808958`1".to_string()),
-                // ("model".to_string(), "gpt-3".to_string()),
-                // ("model hash".to_string(), "0x1234567890".to_string()),
-                // ]
+            additional_metadata: vec![
+                ("timestamp".to_string(), Clock::get()?.unix_timestamp.to_string()),
+                ("price".to_string(), self.collection.price.to_string()),
+                ("collection".to_string(), self.collection.name.to_string()),
+                ("reference".to_string(), self.collection.reference.to_string())
+            ]
         };
 
         let extension_extra_space = metadata.tlv_size_of().unwrap();
         let rent = &Rent::from_account_info(&self.rent.to_account_info())?;
         let lamports = rent.minimum_balance(size + extension_extra_space);
 
-        let nft_key = self.nft.key();
+        let placeholder_key = self.placeholder.key();
         let seeds: &[&[u8]; 3] = &[
             b"mint",
-            nft_key.as_ref(),
+            placeholder_key.as_ref(),
             &[bumps.mint],
         ];
         let signer_seeds = &[&seeds[..]];
@@ -152,31 +151,18 @@ impl<'info> CreateNft<'info> {
         // Step 2: Initialize Extension needed: 
 
         // 2.1: Permanent Delegate, 
-        // invoke(
-        //     &initialize_permanent_delegate(
-        //         &self.token_2022_program.key(),
-        //         &self.mint.key(),
-        //         &self.auth.key(),
-        //     )?,
-        //     &vec![
-        //         self.mint.to_account_info(),
-        //     ],
-        // )?;
+        invoke(
+            &initialize_permanent_delegate(
+                &self.token_2022_program.key(),
+                &self.mint.key(),
+                &self.auth.key(),
+            )?,
+            &vec![
+                self.mint.to_account_info(),
+            ],
+        )?;
         
-        // 2.2: Transfer Hook,
-        // invoke(
-        //     &intialize_transfer_hook(
-        //         &self.token_2022_program.key(),
-        //         &self.mint.key(),
-        //         Some(self.auth.key()),
-        //         None, 
-        //     )?,
-        //     &vec![
-        //         self.mint.to_account_info(),
-        //     ],
-        // )?;
-        
-        // 2.3: Close Mint Authority, 
+        // 2.2: Close Mint Authority, 
         invoke(
             &initialize_mint_close_authority(
                 &self.token_2022_program.key(),
@@ -188,7 +174,7 @@ impl<'info> CreateNft<'info> {
             ],
         )?;
         
-        // 2.4: Metadata Pointer
+        // 2.3: Metadata Pointer
         invoke(
             &initialize_metadata_pointer(
                 &self.token_2022_program.key(),

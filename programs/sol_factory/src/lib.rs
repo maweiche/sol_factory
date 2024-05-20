@@ -7,13 +7,12 @@ mod constant;
 mod context;
 use context::*;
 
-declare_id!("2wj57nXtBwFAJS7mezos1mWirfVJWqxiqYAVtSt7W6F6");
+declare_id!("J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV");
 
 #[program]
 pub mod sol_factory {
     use super::*;
 
-    // Protocol Config
     pub fn intialize_protocol_account(ctx: Context<ProtocolSetting>) -> Result<()> {
         ctx.accounts.initialize_protocol()
     }
@@ -22,45 +21,33 @@ pub mod sol_factory {
         ctx.accounts.change_locked_setting()
     }
 
-    // Adming Config
     pub fn initialize_admin_account(ctx: Context<AdminInit>, username: String) -> Result<()> {
         ctx.accounts.initialize_admin(username)
     }
 
-    // Watch Config
     pub fn create_collection(ctx: Context<CreateCollection>, 
-        name: String, 
-        symbol: String, 
-        sale_start_time: i64, 
-        max_supply: u64, 
-        price: u64, 
-        stable_id: String, 
-        reference: String
-    ) -> Result<()> {
+        name: String, symbol: String, sale_start_time: i64, max_supply: u64, price: u64, stable_id: String, reference: String) -> Result<()> {
         ctx.accounts.create(name, symbol, sale_start_time, max_supply, price, stable_id, reference)
     }
 
-    pub fn create_nft(
-        ctx: Context<CreateNft>,
-        id: u64,
-        reference: String,
-        image: String,
-        seed: u64,
-        model_name: String,
-        model_hash: String,
-        uri: String,
-    ) -> Result<()> {
-        ctx.accounts.create(
-            id,
-            reference,
-            image,
-            seed,
-            model_name,
-            model_hash,
-            uri,
-            ctx.bumps
-        )
+    pub fn create_nft(ctx: Context<CreateNft>, id: u64, uri: String, name: String, attributes: Vec<Attributes>) -> Result<()> {
+        ctx.accounts.create(id, uri, name, attributes, ctx.bumps)
     }
 
+    pub fn transfer_nft(ctx: Context<TransferNft>) -> Result<()> {
+        ctx.accounts.transfer(ctx.bumps)
+    }
+
+    pub fn create_placeholder(ctx: Context<CreatePlaceholder>, id: u64, uri: String) -> Result<()> {
+        ctx.accounts.create(id, uri, ctx.bumps)
+    }
+
+    pub fn buy_placeholder(ctx: Context<BuyPlaceholder>) -> Result<()> {
+        ctx.accounts.buy(ctx.bumps)
+    }
+
+    pub fn burn_placeholder(ctx: Context<BurnPlaceholder>) -> Result<()> {
+        ctx.accounts.burn(ctx.bumps)
+    }
 }
 
