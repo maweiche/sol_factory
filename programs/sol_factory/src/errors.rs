@@ -12,4 +12,6 @@ pub enum BuyingError {
     NotTimeYet,
     #[msg("The collection is sold out!")]
     SoldOut,
+    #[msg("You are not in the Whitelist!")]
+    NotInWhitelist,
 }

@@ -10,14 +10,15 @@ use {
 };
 
 use crate::{
-    state::{AiNft, CompletedAiNft}, 
-    // errors::BuyingError
+    state::{AiNft, CompletedAiNft, Collection}, 
+    errors::BuyingError
 };
 
 #[derive(Accounts)]
 pub struct TransferNft<'info> {
+    /// CHECK
     #[account(mut)]
-    pub buyer: Signer<'info>,
+    pub buyer: AccountInfo<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
 
@@ -50,6 +51,12 @@ pub struct TransferNft<'info> {
     pub mint: UncheckedAccount<'info>,
 
     #[account(
+        seeds = [b"collection", collection.owner.key().as_ref()],
+        bump,
+    )] 
+    pub collection: Account<'info, Collection>,
+
+    #[account(
         seeds = [b"auth"],
         bump
     )]
@@ -67,6 +74,19 @@ impl<'info> TransferNft<'info> {
         &mut self,
         bumps: TransferNftBumps,
     ) -> Result<()> {
+
+        // sale_start_time and whitelist_start_time are both unix timestamps converted to big numbers
+        // if it is before the sale start time, we should check to see if the whitelist is active, if it is not we should throw an error,
+        // if it is active we should check to see if the buyer is in the whitelist, if they are not we should throw an error
+        // if self.collection.sale_start_time > Clock::get()?.unix_timestamp {
+        //     if self.collection.whitelist_start_time < Clock::get()?.unix_timestamp {
+        //         if !self.collection.whitelist.wallets.contains(&self.buyer.key()) {
+        //             return Err(BuyingError::NotInWhitelist.into());
+        //         }
+        //     } else {
+        //         return Err(BuyingError::NotTimeYet.into());
+        //     }
+        // }
 
         let seeds: &[&[u8]; 2] = &[
             b"auth",
@@ -103,27 +123,6 @@ impl<'info> TransferNft<'info> {
             1,
         )?;
 
-        let info = self.nft.to_account_info(); 
-        let mut data = info.try_borrow_mut_data()?;
-
-        // Transform to CompletedAiNft
-        let completed_nft = CompletedAiNft {
-            id: self.nft.id,
-            collection: self.nft.collection,
-            reference: self.nft.reference.clone(),
-            price : self.nft.price,
-            inscription: self.nft.inscription.clone(),
-            rank: self.nft.rank,
-            buyer: self.buyer.key(),
-        };
-
-        // Serialize
-        let mut writer: Vec<u8> = vec![];
-        completed_nft.try_serialize(&mut writer)?;
-        writer.truncate(CompletedAiNft::INIT_SPACE);
-
-        sol_memcpy(&mut data, &writer, writer.len());
-
         set_authority(
             CpiContext::new_with_signer(
                 self.token_2022_program.to_account_info(), 
@@ -137,6 +136,11 @@ impl<'info> TransferNft<'info> {
             None
         )?;
 
+        let whitelist = &mut self.collection.whitelist.wallets;
+        // if the buyer is in the whitelist, remove them
+        if whitelist.contains(&self.buyer.key()) {
+            whitelist.retain(|&x| x != self.buyer.key());
+        }
 
         Ok(())
     }

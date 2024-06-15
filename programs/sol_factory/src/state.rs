@@ -33,10 +33,22 @@ pub struct Collection {
     pub price: u64,
     pub stable_id: String,
     pub reference: String,
+    pub whitelist: WhiteList,
+    pub whitelist_start_time: i64,
+    pub whitelist_price: u64,
 }
 
 impl Space for Collection {
-    const INIT_SPACE: usize = 8 + 4 + 4 + 32 + 8 + 8 + 8 + 8 + 4 + 4;
+    const INIT_SPACE: usize = 8 + 4 + 4 + 32 + 8 + 8 + 8 + 8 + 4 + 4 + 4 + 4;
+}
+
+#[derive(AnchorDeserialize, AnchorSerialize, Clone)]
+pub struct WhiteList {
+    pub wallets: Vec<Pubkey>,
+}
+
+impl Space for WhiteList {
+    const INIT_SPACE: usize = 8 + 8;
 }
 
 #[account]

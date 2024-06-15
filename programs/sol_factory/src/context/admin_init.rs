@@ -21,7 +21,7 @@ pub struct AdminInit<'info> {
     #[account(
         init,
         payer = admin,
-        space = Admin::INIT_SPACE + username.len(),
+        space = Admin::INIT_SPACE + 5,
         seeds = [b"admin_state", new_admin.key().as_ref()],
         bump
     )]

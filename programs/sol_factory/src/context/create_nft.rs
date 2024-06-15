@@ -25,7 +25,7 @@ pub use spl_token_metadata_interface::{
 pub use crate::state::{Collection, Admin, AiNft, Attributes};
 
 #[derive(Accounts)]
-#[instruction(id: u64)]
+#[instruction(id: u64, uri: String, name: String, attributes: Vec<Attributes>)]
 pub struct CreateNft<'info> {
     #[account(mut)]
     pub admin: Signer<'info>,
@@ -45,7 +45,7 @@ pub struct CreateNft<'info> {
         payer = admin,
         seeds = [b"ainft", collection.key().as_ref(), id.to_le_bytes().as_ref()],
         bump,
-        space = AiNft::INIT_SPACE + collection.reference.len(),
+        space = AiNft::INIT_SPACE + attributes.iter().map(|attr| attr.key.len() + attr.value.len()).sum::<usize>(),
     )] 
     pub nft: Account<'info, AiNft>,
 

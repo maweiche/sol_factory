@@ -80,10 +80,9 @@ impl<'info> CreatePlaceholder<'info> {
         bumps: CreatePlaceholderBumps,
     ) -> Result<()> {
 
-        // require!(
-        //     self.collection.sale_start_time <= Clock::get()?.unix_timestamp,
-        //     BuyingError::NotTimeYet
-        // );
+        if self.collection.total_supply >= self.collection.max_supply {
+            return Err(BuyingError::SoldOut.into());
+        }
 
         self.placeholder.set_inner(
             Placeholder {

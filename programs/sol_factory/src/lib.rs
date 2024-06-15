@@ -7,7 +7,7 @@ mod constant;
 mod context;
 use context::*;
 
-declare_id!("J41nXQ21D73QFAVpkD2FVVvAMEhRM37Z517NHhPzj6aV");
+declare_id!("EwaK6Cyb8phWXgEPn3xrbZLokSe1PSsDVkcCwQgs6yws");
 
 #[program]
 pub mod sol_factory {
@@ -26,11 +26,11 @@ pub mod sol_factory {
     }
 
     pub fn create_collection(ctx: Context<CreateCollection>, 
-        name: String, symbol: String, sale_start_time: i64, max_supply: u64, price: u64, stable_id: String, reference: String) -> Result<()> {
-        ctx.accounts.create(name, symbol, sale_start_time, max_supply, price, stable_id, reference)
+        name: String, symbol: String, sale_start_time: i64, max_supply: u64, price: u64, stable_id: String, reference: String, whitelist: Vec<Pubkey>, whitelist_start_time: i64, whitelist_price: u64) -> Result<()> {
+        ctx.accounts.create(name, symbol, sale_start_time, max_supply, price, stable_id, reference, whitelist, whitelist_start_time, whitelist_price)
     }
 
-    pub fn create_nft(ctx: Context<CreateNft>, id: u64, uri: String, name: String, attributes: Vec<Attributes>) -> Result<()> {
+    pub fn create_nft(ctx: Context<CreateNft>, id: u64, uri: String, name: String,  attributes: Vec<Attributes>) -> Result<()> {
         ctx.accounts.create(id, uri, name, attributes, ctx.bumps)
     }
 

@@ -79,16 +79,9 @@ impl<'info> BuyPlaceholder<'info> {
             &[bumps.auth],
         ];
         let signer_seeds = &[&seeds[..]];
-        
-        // require!(
-        //     self.listing.starting_time < Clock::get()?.unix_timestamp || 
-        //     self.listing.starting_time < Clock::get()?.unix_timestamp - 6 * 3600 && membership == 1 || 
-        //     self.listing.starting_time < Clock::get()?.unix_timestamp - 24 * 3600 && membership == 2, 
-        //     BuyingError::NotTimeYet
-        // );
-
+    
         require!(
-            self.collection.sale_start_time <= Clock::get()?.unix_timestamp,
+            self.collection.sale_start_time > Clock::get()?.unix_timestamp,
             BuyingError::NotTimeYet
         );
 
@@ -149,30 +142,9 @@ impl<'info> BuyPlaceholder<'info> {
             ),
             1,
         )?;
-
-        let info = self.placeholder.to_account_info(); 
-        let mut data = info.try_borrow_mut_data()?;
-
-        // Transform to CompletedPlaceholder
-        let completed_placeholder = CompletedPlaceholder {
-            id: self.placeholder.id,
-            collection: self.placeholder.collection,
-            reference: self.placeholder.reference.clone(),
-            name: self.placeholder.name.clone(),
-            price : self.placeholder.price,
-            time_stamp: Clock::get()?.unix_timestamp,
-            buyer: self.buyer.key(),
-        };
-
+        
         // set the collection.total_supply += 1
         self.collection.total_supply += 1;
-
-        // Serialize
-        let mut writer: Vec<u8> = vec![];
-        completed_placeholder.try_serialize(&mut writer)?;
-        writer.truncate(CompletedPlaceholder::INIT_SPACE);
-
-        sol_memcpy(&mut data, &writer, writer.len());
 
         set_authority(
             CpiContext::new_with_signer(
