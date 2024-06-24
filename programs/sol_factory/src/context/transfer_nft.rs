@@ -6,12 +6,10 @@ use {
         token::Token,
         token_interface::{MintTo, mint_to, set_authority, SetAuthority}
     },
-    solana_program::program_memory::sol_memcpy,
 };
 
 use crate::{
-    state::{AiNft, CompletedAiNft, Collection}, 
-    errors::BuyingError
+    state::{AiNft, Collection}, 
 };
 
 #[derive(Accounts)]

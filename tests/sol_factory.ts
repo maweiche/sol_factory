@@ -11,7 +11,8 @@ import {
   Transaction,
   Connection,
   GetProgramAccountsConfig,
-  DataSizeFilter
+  DataSizeFilter,
+  MemcmpFilter
 } from "@solana/web3.js";
 
 import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
@@ -20,10 +21,10 @@ describe("sol_factory", () => {
   const wallet = anchor.Wallet.local();
   const provider = anchor.getProvider();
   const connection = new Connection("https://api.devnet.solana.com", "finalized");
-  const programId = new PublicKey("EwaK6Cyb8phWXgEPn3xrbZLokSe1PSsDVkcCwQgs6yws");
+  const programId = new PublicKey("4GuhLkfXp3hJAeVrgozxhimPVvpJJ93MHpahqbnxAddG");
 
   const program = new anchor.Program<SolFactory>(IDL, programId, provider);
-
+  const collectionRefKey = new PublicKey("mwUt7aCktvBeSm8bry6TvqEcNSUGtxByKCbBKfkxAzA");
   // Helpers
   function wait(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -74,9 +75,15 @@ describe("sol_factory", () => {
     const size_filter: DataSizeFilter = {
       dataSize: 245
     };
+    const memcmp_filter: MemcmpFilter = {
+      memcmp: {
+        offset: 8,
+        bytes: collectionRefKey.toBase58()
+      }
+    };
     const get_accounts_config: GetProgramAccountsConfig = {
         commitment: "confirmed",
-        filters: [size_filter]
+        filters: [memcmp_filter]
     };
 
     const all_collections = await connection.getProgramAccounts(
@@ -147,48 +154,50 @@ describe("sol_factory", () => {
     console.log('auth to string', auth.toString())
     console.log('adminState to string', adminState.toString())
     console.log('buyerPlaceholderAta to string', buyerPlaceholderAta.toString())
-    // const name = "Test 3 Collection";
-    // const symbol = "TST3";
-    // const sale_start_time = new anchor.BN(0);
-    // const max_supply = new anchor.BN(100);
-    // const price = new anchor.BN(1);
-    // const whitelist_price = new anchor.BN(0);
-    // const stable_id = "TST233323232";
-    // const reference = "TST456";
-    // const date_i64 = new anchor.BN(Date.now() * 1000); // 1 second from now
-    // const yesterday_date_i64 = new anchor.BN(Date.now() * 1000 - 86400000);
+    const name = "Test 3 Collection";
+    const symbol = "TST3";
+    const sale_start_time = new anchor.BN(0);
+    const max_supply = new anchor.BN(100);
+    const price = new anchor.BN(1);
+    const whitelist_price = new anchor.BN(0);
+    const stable_id = "TST233323232";
+    const reference = "TST456";
+    const date_i64 = new anchor.BN(Date.now() * 1000); // 1 second from now
+    const yesterday_date_i64 = new anchor.BN(Date.now() * 1000 - 86400000);
 
-    // try{
+    try{
 
-    //   const createCollectionIx = await program.methods
-    //     .createCollection(
-    //       name,
-    //       symbol,
-    //       date_i64,
-    //       max_supply,
-    //       price,
-    //       stable_id,
-    //       reference,
-    //       [
-    //         new PublicKey('7wK3jPMYjpZHZAghjersW6hBNMgi9VAGr75AhYRqR2n'),
-    //         new PublicKey('2UbngADg4JvCftthHoDY4gKNqsScRsQ1LLtyDqLQbWhb'),
-    //         new PublicKey('DEVJb1nq3caksGybAFxoxsYXLi9nyp8ZQnmAFmfAYMSN')
-    //       ],
-    //       yesterday_date_i64,
-    //       whitelist_price
-    //     )
-    //     .accounts({
-    //       owner: buyer.publicKey,
-    //       collection: buyer_collection,
-    //       systemProgram: SystemProgram.programId,
-    //     })
-    //     .instruction()
+      const createCollectionIx = await program.methods
+        .createCollection(
+          collectionRefKey,
+          name,
+          symbol,
+          date_i64,
+          max_supply,
+          price,
+          stable_id,
+          [
+            new PublicKey('7wK3jPMYjpZHZAghjersW6hBNMgi9VAGr75AhYRqR2n'),
+            new PublicKey('2UbngADg4JvCftthHoDY4gKNqsScRsQ1LLtyDqLQbWhb'),
+            new PublicKey('DEVJb1nq3caksGybAFxoxsYXLi9nyp8ZQnmAFmfAYMSN')
+          ],
+          yesterday_date_i64,
+          whitelist_price
+        )
+        .accounts({
+          owner: buyer.publicKey,
+          collection: buyer_collection,
+          systemProgram: SystemProgram.programId,
+        })
+        .instruction()
 
-    //   const tx = new anchor.web3.Transaction().add(createCollectionIx);
-    //   await sendAndConfirmTransaction(connection, tx, [collection_wallet], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
-    // } catch (error) {
-    //   console.log('error', error)
-    // }
+      const tx = new anchor.web3.Transaction().add(createCollectionIx);
+      await sendAndConfirmTransaction(connection, tx, [collection_wallet], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+
+      getAllCollections();
+    } catch (error) {
+      console.log('error', error)
+    }
   });
 
   it("Create Placeholder", async () => {
@@ -239,93 +248,93 @@ describe("sol_factory", () => {
     await sendAndConfirmTransaction(connection, transaction, [buyer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
   });
 
-  // it("Create Nft", async () => {
-  //   const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
+  it("Create Nft", async () => {
+    const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
 
-  //   // const attributes = [
-  //   //   {key: "season", value: "winter"},
-  //   //   {key: "camera angle", value: "low angle"},
-  //   //   {key: "theme", value: "nichijo"},
-  //   //   {key: "seed", value: "3808958`1"},
-  //   //   {key: "model", value: "gpt-3"},
-  //   // ];
+    // const attributes = [
+    //   {key: "season", value: "winter"},
+    //   {key: "camera angle", value: "low angle"},
+    //   {key: "theme", value: "nichijo"},
+    //   {key: "seed", value: "3808958`1"},
+    //   {key: "model", value: "gpt-3"},
+    // ];
      
-  //   // url for fetch: https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c
-  //   // headers: "x-authorization: Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
+    // url for fetch: https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c
+    // headers: "x-authorization: Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
 
-  //   const nft_data = await fetch("https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c", {
-  //     headers: {
-  //       "x-authorization" : "Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
-  //     }
-  //   })
-  //   console.log('nft data from api', nft_data)
-  //   // fetch the name from the metadataUrl
-  //   const metadata_json: any = await nft_data.json(); 
-  //   console.log('metadata json from api', metadata_json)
-  //   // const nft_name = metadata_json.name;
-  //   console.log('attempted nft name', metadata_json.name)
-  //   // const nft_name = 'steve'
-  //   // sample response {"metadataUrl":"https://arweave.net/o8XcENbEAQie9Sr-esLrLy4g2u7gnu9Xj289mmOyJZ4","image":"https://arweave.net/E-uaro2mHTJFINUJc9nbu7aCsnCi6jdWov43MhqY9LI","seed":3808958412,"attributes":[{"trait_type":"Season","value":"Winter"},{"trait_type":"Camera Angle","value":"Low Angle"},{"trait_type":"Theme","value":"Nichijo"},{"trait_type":"Seed","value":"3808958412"}],"model_name":"sdxl-base-1.0","model_hash":"31e35c80fc"}
-  //   const attributes = metadata_json.attributes.map((attr: any) => {
-  //     return {key: attr.trait_type, value: attr.value}
-  //   })
-  //   console.log('real attributes', attributes)
+    const nft_data = await fetch("https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c", {
+      headers: {
+        "x-authorization" : "Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
+      }
+    })
+    console.log('nft data from api', nft_data)
+    // fetch the name from the metadataUrl
+    const metadata_json: any = await nft_data.json(); 
+    console.log('metadata json from api', metadata_json)
+    // const nft_name = metadata_json.name;
+    console.log('attempted nft name', metadata_json.name)
+    // const nft_name = 'steve'
+    // sample response {"metadataUrl":"https://arweave.net/o8XcENbEAQie9Sr-esLrLy4g2u7gnu9Xj289mmOyJZ4","image":"https://arweave.net/E-uaro2mHTJFINUJc9nbu7aCsnCi6jdWov43MhqY9LI","seed":3808958412,"attributes":[{"trait_type":"Season","value":"Winter"},{"trait_type":"Camera Angle","value":"Low Angle"},{"trait_type":"Theme","value":"Nichijo"},{"trait_type":"Seed","value":"3808958412"}],"model_name":"sdxl-base-1.0","model_hash":"31e35c80fc"}
+    const attributes = metadata_json.attributes.map((attr: any) => {
+      return {key: attr.trait_type, value: attr.value}
+    })
+    console.log('real attributes', attributes)
 
 
-  //   // we need to ping the metadataUrl to get the nft's name from the metadata json in the response
-  //   const areweave_metadata: any = await fetch(metadata_json.metadataUrl)
-  //   const areweave_json = await areweave_metadata.json()
-  //   console.log('areweave json', areweave_json)
+    // we need to ping the metadataUrl to get the nft's name from the metadata json in the response
+    const areweave_metadata: any = await fetch(metadata_json.metadataUrl)
+    const areweave_json = await areweave_metadata.json()
+    console.log('areweave json', areweave_json)
 
-  //   const nft_name = areweave_json.name;
+    const nft_name = areweave_json.name;
 
-  //   const createListingIx = await program.methods
-  //   .createNft(
-  //     new anchor.BN(id),
-  //     metadata_json.metadataUrl,
-  //     nft_name,
-  //     attributes,
-  //   )
-  //   .accounts({
-  //     admin: wallet.publicKey,
-  //     adminState,   
-  //     collection: collection,
-  //     nft: nft,
-  //     mint: nft_mint,
-  //     auth,
-  //     rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-  //     token2022Program: TOKEN_2022_PROGRAM_ID,
-  //     systemProgram: SystemProgram.programId,
-  //   })
-  //   .instruction()
+    const createListingIx = await program.methods
+    .createNft(
+      new anchor.BN(id),
+      metadata_json.metadataUrl,
+      nft_name,
+      attributes,
+    )
+    .accounts({
+      admin: wallet.publicKey,
+      adminState,   
+      collection: collection,
+      nft: nft,
+      mint: nft_mint,
+      auth,
+      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+      token2022Program: TOKEN_2022_PROGRAM_ID,
+      systemProgram: SystemProgram.programId,
+    })
+    .instruction()
 
-  //   const tx = new anchor.web3.Transaction().add(modifyComputeUnitIx).add(createListingIx);
-  //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
-  // });
+    const tx = new anchor.web3.Transaction().add(modifyComputeUnitIx).add(createListingIx);
+    await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  });
 
-  // it("Transfer Nft", async () => {
-  //   const transaction = new Transaction().add(
-  //     await program.methods
-  //     .transferNft()
-  //     .accounts({
-  //       payer: wallet.publicKey,
-  //       buyer: buyer.publicKey,
-  //       buyerMintAta: buyerNftAta,
-  //       nft: nft,
-  //       mint: nft_mint,
-  //       collection: collection,
-  //       auth,
-  //       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-  //       tokenProgram: TOKEN_PROGRAM_ID,
-  //       token2022Program: TOKEN_2022_PROGRAM_ID,
-  //       systemProgram: SystemProgram.programId,
-  //     })
-  //     .instruction()
-  //   );
-  //   transaction.feePayer = wallet.publicKey;
+  it("Transfer Nft", async () => {
+    const transaction = new Transaction().add(
+      await program.methods
+      .transferNft()
+      .accounts({
+        payer: wallet.publicKey,
+        buyer: buyer.publicKey,
+        buyerMintAta: buyerNftAta,
+        nft: nft,
+        mint: nft_mint,
+        collection: collection,
+        auth,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        token2022Program: TOKEN_2022_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      })
+      .instruction()
+    );
+    transaction.feePayer = wallet.publicKey;
     
-  //   await sendAndConfirmTransaction(connection, transaction, [buyer, wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
-  // });
+    await sendAndConfirmTransaction(connection, transaction, [buyer, wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  });
 
   it("Burn Placeholder", async () => {
 

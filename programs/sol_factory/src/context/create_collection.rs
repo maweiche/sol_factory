@@ -5,13 +5,13 @@ use crate::state::WhiteList;
 
 #[derive(Accounts)]
 #[instruction(
+    reference: Pubkey,
     name: String,
     symbol: String,
     sale_start_time: i64,
     max_supply: u64,
     price: u64,
     stable_id: String,
-    reference: String,
     whitelist: Vec<Pubkey>,
     whitelist_start_time: i64,
     whitelist_price: u64,
@@ -25,7 +25,7 @@ pub struct CreateCollection<'info> {
         seeds = [b"collection", owner.key().as_ref()],
         bump,
         payer = owner,
-        space = Collection::INIT_SPACE + 54 + 4 + stable_id.len() + 8 + 8 + 8 + 8 + 4 + 4 + (whitelist.len() * 32) as usize,
+        space = Collection::INIT_SPACE + 54 + name.len() + stable_id.len() + (whitelist.len() * 32) as usize,
     )] 
     pub collection: Account<'info, Collection>,
 
@@ -35,13 +35,13 @@ pub struct CreateCollection<'info> {
 impl<'info> CreateCollection<'info> {
     pub fn create(
         &mut self,
+        reference: Pubkey,
         name: String, // max 50 characters
         symbol: String, // max 4 characters
         sale_start_time: i64,
         max_supply: u64,
         price: u64,
         stable_id: String,
-        reference: String,
         whitelist: Vec<Pubkey>,
         whitelist_start_time: i64,
         whitelist_price: u64,
@@ -49,6 +49,7 @@ impl<'info> CreateCollection<'info> {
     ) -> Result<()> {
         self.collection.set_inner(
             Collection {
+                reference,
                 name,
                 symbol,
                 owner: *self.owner.key,
@@ -57,7 +58,6 @@ impl<'info> CreateCollection<'info> {
                 total_supply: 0,
                 price,
                 stable_id,
-                reference,
                 whitelist: WhiteList {
                     wallets: whitelist,
                 },

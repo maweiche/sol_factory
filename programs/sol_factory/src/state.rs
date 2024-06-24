@@ -24,6 +24,7 @@ impl Space for Admin {
 // Fragment State
 #[account]
 pub struct Collection {
+    pub reference: Pubkey,
     pub name: String,
     pub symbol: String,
     pub owner: Pubkey,
@@ -32,14 +33,13 @@ pub struct Collection {
     pub total_supply: u64,
     pub price: u64,
     pub stable_id: String,
-    pub reference: String,
     pub whitelist: WhiteList,
     pub whitelist_start_time: i64,
     pub whitelist_price: u64,
 }
 
 impl Space for Collection {
-    const INIT_SPACE: usize = 8 + 4 + 4 + 32 + 8 + 8 + 8 + 8 + 4 + 4 + 4 + 4;
+    const INIT_SPACE: usize = 8 + 32 + 4 + 4 + 32 + 8 + 8 + 8 + 8 + 4 + 4 + 8 + 8; 
 }
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone)]
@@ -65,21 +65,6 @@ impl Space for Placeholder {
     const INIT_SPACE: usize = 8 + 8 + 32 + 4 + 2 + 2 + 8 + 8;
 }
 
-#[account]
-pub struct CompletedPlaceholder {
-    pub id: u64,
-    pub collection: Pubkey,
-    pub reference: String,
-    pub name: String,
-    pub price: u64,
-    pub time_stamp: i64,
-    pub buyer: Pubkey,
-}
-
-impl Space for CompletedPlaceholder {
-    const INIT_SPACE: usize = 8 + 8 + 32 + 4 + 2 + 8 + 32;
-}
-
 #[derive(AnchorDeserialize, AnchorSerialize, Clone)]
 pub struct Attributes {
     pub key: String,
@@ -100,20 +85,4 @@ pub struct AiNft {
 
 impl Space for AiNft {
     const INIT_SPACE: usize = 8 + 8 + 32 + 4 + 2 + 32 + 2 + 8;
-}
-
-#[account]
-pub struct CompletedAiNft {
-    pub id: u64,
-    pub collection: Pubkey,
-    pub reference: String,
-    pub price: u64,
-    // pub inscription: Pubkey,
-    pub inscription: String,
-    pub rank: u16,
-    pub buyer: Pubkey,
-}
-
-impl Space for CompletedAiNft {
-    const INIT_SPACE: usize = 8 + 8 + 32 + 4 + 2 + 32 + 2 + 8 + 32;
 }

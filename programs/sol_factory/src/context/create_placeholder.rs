@@ -46,7 +46,7 @@ pub struct CreatePlaceholder<'info> {
         payer = admin,
         seeds = [b"placeholder", collection.key().as_ref(), id.to_le_bytes().as_ref()],
         bump,
-        space = Placeholder::INIT_SPACE + collection.reference.len() + collection.name.len() + collection.symbol.len() + 8 + 8,
+        space = Placeholder::INIT_SPACE + 32 + collection.name.len() + collection.symbol.len() + 8 + 8,
     )] 
     pub placeholder: Account<'info, Placeholder>,
 
@@ -88,7 +88,7 @@ impl<'info> CreatePlaceholder<'info> {
             Placeholder {
                 id,
                 collection: self.collection.key(),
-                reference: self.collection.reference.clone(),
+                reference: self.collection.reference.to_string(),
                 name: self.collection.name.clone(),
                 price: self.collection.price,
                 time_stamp: Clock::get()?.unix_timestamp

@@ -85,7 +85,7 @@ impl<'info> CreateNft<'info> {
             AiNft {
                 id,
                 collection: self.collection.key(),
-                reference: self.collection.reference.clone(),
+                reference: self.collection.reference.to_string(),
                 price: self.collection.price,
                 time_stamp: Clock::get()?.unix_timestamp,
                 inscription: "none".to_string(),

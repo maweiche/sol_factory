@@ -8,13 +8,13 @@ use {
         token::Token,  
         token_interface::{MintTo, mint_to, set_authority, SetAuthority}
     },
-    solana_program::{program_memory::sol_memcpy, system_instruction, program::invoke},
+    solana_program::{system_instruction, program::invoke},
 };
 
 
 
 use crate::{
-    state::{Placeholder, CompletedPlaceholder, Collection}, 
+    state::{Placeholder, Collection}, 
     errors::BuyingError
 };
 
