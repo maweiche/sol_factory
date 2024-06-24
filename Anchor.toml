@@ -5,7 +5,7 @@ seeds = false
 skip-lint = false
 
 [programs.devnet]
-sol_factory = "4GuhLkfXp3hJAeVrgozxhimPVvpJJ93MHpahqbnxAddG"
+sol_factory = "7UuQdkAjmYf7ibJXSp5rpc56XHpw64QDnhfFz6n2KJLZ"
 
 [registry]
 url = "https://api.apr.dev"

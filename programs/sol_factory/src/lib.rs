@@ -7,7 +7,7 @@ mod constant;
 mod context;
 use context::*;
 
-declare_id!("4GuhLkfXp3hJAeVrgozxhimPVvpJJ93MHpahqbnxAddG");
+declare_id!("7UuQdkAjmYf7ibJXSp5rpc56XHpw64QDnhfFz6n2KJLZ");
 
 #[program]
 pub mod sol_factory {
@@ -26,8 +26,19 @@ pub mod sol_factory {
     }
 
     pub fn create_collection(ctx: Context<CreateCollection>, 
-        reference: Pubkey, name: String, symbol: String, sale_start_time: i64, max_supply: u64, price: u64, stable_id: String, whitelist: Vec<Pubkey>, whitelist_start_time: i64, whitelist_price: u64) -> Result<()> {
-        ctx.accounts.create(reference, name, symbol, sale_start_time, max_supply, price, stable_id, whitelist, whitelist_start_time, whitelist_price)
+        reference: Pubkey, 
+        name: String, 
+        symbol: String, 
+        url: String, 
+        sale_start_time: i64, 
+        max_supply: u64, 
+        price: u64, 
+        stable_id: String, 
+        whitelist: Vec<Pubkey>, 
+        whitelist_start_time: i64, 
+        whitelist_price: u64
+    ) -> Result<()> {
+        ctx.accounts.create(reference, name, symbol, url, sale_start_time, max_supply, price, stable_id, whitelist, whitelist_start_time, whitelist_price)
     }
 
     pub fn create_nft(ctx: Context<CreateNft>, id: u64, uri: String, name: String,  attributes: Vec<Attributes>) -> Result<()> {
@@ -44,10 +55,6 @@ pub mod sol_factory {
 
     pub fn buy_placeholder(ctx: Context<BuyPlaceholder>) -> Result<()> {
         ctx.accounts.buy(ctx.bumps)
-    }
-
-    pub fn burn_placeholder(ctx: Context<BurnPlaceholder>) -> Result<()> {
-        ctx.accounts.burn(ctx.bumps)
     }
 }
 

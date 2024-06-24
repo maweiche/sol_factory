@@ -21,7 +21,7 @@ describe("sol_factory", () => {
   const wallet = anchor.Wallet.local();
   const provider = anchor.getProvider();
   const connection = new Connection("https://api.devnet.solana.com", "finalized");
-  const programId = new PublicKey("4GuhLkfXp3hJAeVrgozxhimPVvpJJ93MHpahqbnxAddG");
+  const programId = new PublicKey("7UuQdkAjmYf7ibJXSp5rpc56XHpw64QDnhfFz6n2KJLZ");
 
   const program = new anchor.Program<SolFactory>(IDL, programId, provider);
   const collectionRefKey = new PublicKey("mwUt7aCktvBeSm8bry6TvqEcNSUGtxByKCbBKfkxAzA");
@@ -92,23 +92,6 @@ describe("sol_factory", () => {
     );
     console.log('all_collections', all_collections)
 
-    // ex. collection:
-    // {
-  //   account: {
-  //     data: <Buffer 5b da f2 1c 8b d0 49 59 84 35 00 00 00 00 00 00 27 26 92 08 00 b7 4c a4 e3 1a 20 a2 71 97 b7 cd e0 4f 8a a9 d9 96 ac 48 35 02 41 49 9e 42 f1 c2 06 00 ... 52 more bytes>,
-  //     executable: false,
-  //     lamports: 1600800,
-  //     owner: [PublicKey [PublicKey(EsgdV69W9Qi6i2q6Gfus8vuy27aXwrf61gC1z1hbnr6d)]],
-  //     rentEpoch: 18446744073709552000,
-  //     space: 102
-  //   },
-  //   pubkey: PublicKey [PublicKey(F67Lkabu45txsmB7j6jgsac6uRT3kGCcmsR4vwK5gici)] {
-  //     _bn: <BN: d152b0b6a0ad1f2e32f18b7630b5f054483a3075c62a4864c4617fee0496a173>
-  //   }
-  // }
-
-    // for each collection we need to return the account.space and pubkey.toString()
-
     const _collection_decode = all_collections.map((collection) => {
         try {
             const decode = program.coder.accounts.decode("collection", collection.account.data);
@@ -146,59 +129,61 @@ describe("sol_factory", () => {
   //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
   // });
 
-  it("Create Collection", async () => {
-    console.log('collection to string', collection.toString())
-    console.log('placeholder to string', placeholder.toString())
-    console.log('placeholder mint to string', placeholder_mint.toString())
-    console.log('nft to string', nft.toString())
-    console.log('auth to string', auth.toString())
-    console.log('adminState to string', adminState.toString())
-    console.log('buyerPlaceholderAta to string', buyerPlaceholderAta.toString())
-    const name = "Test 3 Collection";
-    const symbol = "TST3";
-    const sale_start_time = new anchor.BN(0);
-    const max_supply = new anchor.BN(100);
-    const price = new anchor.BN(1);
-    const whitelist_price = new anchor.BN(0);
-    const stable_id = "TST233323232";
-    const reference = "TST456";
-    const date_i64 = new anchor.BN(Date.now() * 1000); // 1 second from now
-    const yesterday_date_i64 = new anchor.BN(Date.now() * 1000 - 86400000);
+  // it("Create Collection", async () => {
+  //   console.log('collection to string', collection.toString())
+  //   console.log('placeholder to string', placeholder.toString())
+  //   console.log('placeholder mint to string', placeholder_mint.toString())
+  //   console.log('nft to string', nft.toString())
+  //   console.log('auth to string', auth.toString())
+  //   console.log('adminState to string', adminState.toString())
+  //   console.log('buyerPlaceholderAta to string', buyerPlaceholderAta.toString())
+  //   const name = "Test 3 Collection";
+  //   const symbol = "TST3";
+  //   const sale_start_time = new anchor.BN(0);
+  //   const max_supply = new anchor.BN(100);
+  //   const price = new anchor.BN(1);
+  //   const whitelist_price = new anchor.BN(0);
+  //   const stable_id = "TST233323232";
+  //   const reference = "TST456";
+  //   const date_i64 = new anchor.BN(Date.now() * 1000); // 1 second from now
+  //   const yesterday_date_i64 = new anchor.BN(Date.now() * 1000 - 86400000);
 
-    try{
+  //   const url = "https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c";
+  //   try{
 
-      const createCollectionIx = await program.methods
-        .createCollection(
-          collectionRefKey,
-          name,
-          symbol,
-          date_i64,
-          max_supply,
-          price,
-          stable_id,
-          [
-            new PublicKey('7wK3jPMYjpZHZAghjersW6hBNMgi9VAGr75AhYRqR2n'),
-            new PublicKey('2UbngADg4JvCftthHoDY4gKNqsScRsQ1LLtyDqLQbWhb'),
-            new PublicKey('DEVJb1nq3caksGybAFxoxsYXLi9nyp8ZQnmAFmfAYMSN')
-          ],
-          yesterday_date_i64,
-          whitelist_price
-        )
-        .accounts({
-          owner: buyer.publicKey,
-          collection: buyer_collection,
-          systemProgram: SystemProgram.programId,
-        })
-        .instruction()
+  //     const createCollectionIx = await program.methods
+  //       .createCollection(
+  //         collectionRefKey,
+  //         name,
+  //         symbol,
+  //         url,
+  //         date_i64,
+  //         max_supply,
+  //         price,
+  //         stable_id,
+  //         [
+  //           new PublicKey('7wK3jPMYjpZHZAghjersW6hBNMgi9VAGr75AhYRqR2n'),
+  //           new PublicKey('2UbngADg4JvCftthHoDY4gKNqsScRsQ1LLtyDqLQbWhb'),
+  //           new PublicKey('DEVJb1nq3caksGybAFxoxsYXLi9nyp8ZQnmAFmfAYMSN')
+  //         ],
+  //         yesterday_date_i64,
+  //         whitelist_price
+  //       )
+  //       .accounts({
+  //         owner: buyer.publicKey,
+  //         collection: buyer_collection,
+  //         systemProgram: SystemProgram.programId,
+  //       })
+  //       .instruction()
 
-      const tx = new anchor.web3.Transaction().add(createCollectionIx);
-      await sendAndConfirmTransaction(connection, tx, [collection_wallet], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  //     const tx = new anchor.web3.Transaction().add(createCollectionIx);
+  //     await sendAndConfirmTransaction(connection, tx, [collection_wallet], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
 
-      getAllCollections();
-    } catch (error) {
-      console.log('error', error)
-    }
-  });
+  //     getAllCollections();
+  //   } catch (error) {
+  //     console.log('error', error)
+  //   }
+  // });
 
   it("Create Placeholder", async () => {
     const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
@@ -233,6 +218,7 @@ describe("sol_factory", () => {
         payer: buyer.publicKey,
         buyer: buyer.publicKey,
         collection: collection,
+        collectionOwner: buyer.publicKey,
         buyerMintAta: buyerPlaceholderAta,
         placeholder: placeholder,
         mint: placeholder_mint,
@@ -249,6 +235,11 @@ describe("sol_factory", () => {
   });
 
   it("Create Nft", async () => {
+    // ADD IN THE FETCH OF THE URL FROM THE DECODED COLLECTION DATA
+
+    
+
+
     const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
 
     // const attributes = [
@@ -261,8 +252,8 @@ describe("sol_factory", () => {
      
     // url for fetch: https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c
     // headers: "x-authorization: Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
-
-    const nft_data = await fetch("https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c", {
+    const url =  "https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c"
+    const nft_data = await fetch(url, {
       headers: {
         "x-authorization" : "Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
       }
@@ -312,7 +303,7 @@ describe("sol_factory", () => {
     await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
   });
 
-  it("Transfer Nft", async () => {
+  it("Transfer Nft and Burn Placeholder", async () => {
     const transaction = new Transaction().add(
       await program.methods
       .transferNft()
@@ -324,6 +315,10 @@ describe("sol_factory", () => {
         mint: nft_mint,
         collection: collection,
         auth,
+        buyerPlaceholderMintAta: buyerPlaceholderAta,
+        placeholder: placeholder,
+        placeholderMint: placeholder_mint,
+        placeholderMintAuthority: wallet.publicKey,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         tokenProgram: TOKEN_PROGRAM_ID,
         token2022Program: TOKEN_2022_PROGRAM_ID,
@@ -334,29 +329,6 @@ describe("sol_factory", () => {
     transaction.feePayer = wallet.publicKey;
     
     await sendAndConfirmTransaction(connection, transaction, [buyer, wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
-  });
-
-  it("Burn Placeholder", async () => {
-
-    const transaction = new Transaction().add(
-      await program.methods
-      .burnPlaceholder()
-      .accounts({
-        buyer: buyer.publicKey,
-        buyerMintAta: buyerPlaceholderAta,
-        placeholder: placeholder,
-        placeholderMint: placeholder_mint,
-        authority: auth,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        token2022Program: TOKEN_2022_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-        mint: placeholder_mint,
-        mintAuthority: wallet.publicKey
-      })
-      .instruction()
-    );
-    
-    await sendAndConfirmTransaction(connection, transaction, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
   });
 });
 

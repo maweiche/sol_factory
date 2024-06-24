@@ -1,5 +1,3 @@
-// THIS CREATES THE PLACEHOLDER NFT THAT WE THEN BURN WHEN AI NFT IS COMPLETE
-
 pub use anchor_lang::{
     solana_program::{
         sysvar::rent::ID as RENT_ID,
@@ -112,14 +110,6 @@ impl<'info> CreateNft<'info> {
             symbol: self.collection.symbol.to_string(),
             uri,
             additional_metadata: attributes.into_iter().map(|attr| (attr.key, attr.value)).collect(),
-                // vec![
-                // ("season".to_string(), "winter".to_string()),
-                // ("camera angle".to_string(), "low angle".to_string()),
-                // ("theme".to_string(), "nichijo".to_string()),
-                // ("seed".to_string(), "3808958`1".to_string()),
-                // ("model".to_string(), "gpt-3".to_string()),
-                // ("model hash".to_string(), "0x1234567890".to_string()),
-                // ]
         };
 
         let extension_extra_space = metadata.tlv_size_of().unwrap();
@@ -148,33 +138,6 @@ impl<'info> CreateNft<'info> {
             ],
             signer_seeds
         )?;
-
-        // Step 2: Initialize Extension needed: 
-
-        // 2.1: Permanent Delegate, 
-        // invoke(
-        //     &initialize_permanent_delegate(
-        //         &self.token_2022_program.key(),
-        //         &self.mint.key(),
-        //         &self.auth.key(),
-        //     )?,
-        //     &vec![
-        //         self.mint.to_account_info(),
-        //     ],
-        // )?;
-        
-        // 2.2: Transfer Hook,
-        // invoke(
-        //     &intialize_transfer_hook(
-        //         &self.token_2022_program.key(),
-        //         &self.mint.key(),
-        //         Some(self.auth.key()),
-        //         None, 
-        //     )?,
-        //     &vec![
-        //         self.mint.to_account_info(),
-        //     ],
-        // )?;
         
         // 2.3: Close Mint Authority, 
         invoke(

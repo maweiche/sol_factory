@@ -26,6 +26,9 @@ pub struct BuyPlaceholder<'info> {
     pub payer: Signer<'info>,
     #[account(mut)]
     pub collection: Account<'info, Collection>,
+    /// CHECK
+    #[account(mut)]
+    pub collection_owner: AccountInfo<'info>,
 
     #[account(
         mut,
@@ -97,19 +100,36 @@ impl<'info> BuyPlaceholder<'info> {
         // require!(self.listing.share_sold == self.mint.supply) - TODO
 
         // Pay the mint
-        let amount_in_lamports = self.placeholder.price * LAMPORTS_PER_SOL;
+        let amount_in_lamports = (self.placeholder.price * LAMPORTS_PER_SOL) as u64;
         let transfer_instruction = system_instruction::transfer(
             &self.buyer.key(),
-            &self.placeholder.to_account_info().key,
+            &self.collection_owner.key(),
             amount_in_lamports,
+        );
+
+        // The 2nd transfer instruction is the fee for the mint since the admin wallet is the payer of second mint
+        let admin_fee = 0.05;
+        let admin_fee_in_lamports = (amount_in_lamports as f64 * admin_fee) as u64;
+        let transfer_instruction_two = system_instruction::transfer(
+            &self.buyer.key(),
+            &self.payer.key(),
+            admin_fee_in_lamports,
         );
 
         invoke(
             &transfer_instruction,
             &[
                 self.buyer.to_account_info(),
+                self.collection_owner.to_account_info(),
+                self.system_program.to_account_info(),
+            ],
+        )?;
+
+        invoke(
+            &transfer_instruction_two,
+            &[
+                self.buyer.to_account_info(),
                 self.payer.to_account_info(),
-                self.placeholder.to_account_info(),
                 self.system_program.to_account_info(),
             ],
         )?;

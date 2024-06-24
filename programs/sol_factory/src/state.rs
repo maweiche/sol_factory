@@ -28,6 +28,7 @@ pub struct Collection {
     pub name: String,
     pub symbol: String,
     pub owner: Pubkey,
+    pub url: String,
     pub sale_start_time: i64,
     pub max_supply: u64,
     pub total_supply: u64,
@@ -39,7 +40,7 @@ pub struct Collection {
 }
 
 impl Space for Collection {
-    const INIT_SPACE: usize = 8 + 32 + 4 + 4 + 32 + 8 + 8 + 8 + 8 + 4 + 4 + 8 + 8; 
+    const INIT_SPACE: usize = 8 + 32 + 4 + 4 + 32 + 4 + 8 + 8 + 8 + 8 + 4 + 4 + 8 + 8; 
 }
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone)]

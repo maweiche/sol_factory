@@ -18,6 +18,3 @@ pub use create_placeholder::*;
 
 pub mod buy_placeholder;
 pub use buy_placeholder::*;
-
-pub mod burn_placeholder;
-pub use burn_placeholder::*;
