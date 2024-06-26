@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 
-use crate::state::Collection;
+use crate::state::{Collection, Protocol};
+use crate::errors::ProtocolError;
 use crate::state::WhiteList;
 
 #[derive(Accounts)]
@@ -28,7 +29,11 @@ pub struct CreateCollection<'info> {
         space = Collection::INIT_SPACE + 54 + url.len() + name.len() + stable_id.len() + (whitelist.len() * 32) as usize,
     )] 
     pub collection: Account<'info, Collection>,
-
+    #[account(
+        seeds = [b"protocol"],
+        bump,
+    )]
+    pub protocol: Account<'info, Protocol>,
     pub system_program: Program<'info, System>,
 }
 
@@ -48,6 +53,9 @@ impl<'info> CreateCollection<'info> {
         whitelist_price: u64,
 
     ) -> Result<()> {
+
+        require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
+
         self.collection.set_inner(
             Collection {
                 reference,

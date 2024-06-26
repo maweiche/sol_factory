@@ -11,7 +11,8 @@ use {
     },
 };
 use spl_token_2022::instruction::burn;
-use crate::state::{AiNft, Collection, Placeholder};
+use crate::state::{Protocol, AiNft, Collection, Placeholder};
+use crate::errors::ProtocolError;
 
 #[derive(Accounts)]
 pub struct TransferNft<'info> {
@@ -95,6 +96,11 @@ pub struct TransferNft<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
     pub token_2022_program: Program<'info, Token2022>,
+    #[account(
+        seeds = [b"protocol"],
+        bump,
+    )]
+    pub protocol: Account<'info, Protocol>,
     pub system_program: Program<'info, System>,
 }
 
@@ -103,6 +109,8 @@ impl<'info> TransferNft<'info> {
         &mut self,
         bumps: TransferNftBumps,
     ) -> Result<()> {
+
+        require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
 
         // sale_start_time and whitelist_start_time are both unix timestamps converted to big numbers
         // if it is before the sale start time, we should check to see if the whitelist is active, if it is not we should throw an error,
@@ -123,21 +131,23 @@ impl<'info> TransferNft<'info> {
         ];
         let signer_seeds = &[&seeds[..]];
 
-        // Initialize ATA
-        create(
-            CpiContext::new(
-                self.token_2022_program.to_account_info(), // NEEDS CHANGE TO ATA PROGRAM
-                Create {
-                    payer: self.payer.to_account_info(), // payer
-                    associated_token: self.buyer_mint_ata.to_account_info(),
-                    authority: self.buyer.to_account_info(), // owner
-                    mint: self.mint.to_account_info(),
-                    system_program: self.system_program.to_account_info(),
-                    token_program: self.token_2022_program.to_account_info(),
-                }
-            ),
-        )?;
-
+        // Initialize ATA if it doesn't exist
+        if self.buyer_mint_ata.lamports() == 0 {
+            create(
+                CpiContext::new(
+                    self.token_2022_program.to_account_info(), // NEEDS CHANGE TO ATA PROGRAM
+                    Create {
+                        payer: self.payer.to_account_info(), // payer
+                        associated_token: self.buyer_mint_ata.to_account_info(),
+                        authority: self.buyer.to_account_info(), // owner
+                        mint: self.mint.to_account_info(),
+                        system_program: self.system_program.to_account_info(),
+                        token_program: self.token_2022_program.to_account_info(),
+                    }
+                ),
+            )?;
+        }
+        
         // Mint the mint
         mint_to(
             CpiContext::new_with_signer(

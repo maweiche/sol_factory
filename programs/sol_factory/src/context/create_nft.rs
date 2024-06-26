@@ -20,7 +20,8 @@ pub use spl_token_metadata_interface::{
 };
 
 
-pub use crate::state::{Collection, Admin, AiNft, Attributes};
+pub use crate::state::{Protocol, Collection, Admin, AiNft, Attributes};
+pub use crate::errors::ProtocolError;
 
 #[derive(Accounts)]
 #[instruction(id: u64, uri: String, name: String, attributes: Vec<Attributes>)]
@@ -66,6 +67,11 @@ pub struct CreateNft<'info> {
     /// CHECK: this is fine since we are hard coding the rent sysvar.
     pub rent: UncheckedAccount<'info>,
     pub token_2022_program: Program<'info, Token2022>,
+    #[account(
+        seeds = [b"protocol"],
+        bump,
+    )]
+    pub protocol: Account<'info, Protocol>,
     pub system_program: Program<'info, System>,
 }
 
@@ -78,6 +84,8 @@ impl<'info> CreateNft<'info> {
         attributes: Vec<Attributes>,
         bumps: CreateNftBumps,
     ) -> Result<()> {
+
+        require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
 
         self.nft.set_inner(
             AiNft {

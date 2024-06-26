@@ -15,3 +15,8 @@ pub enum BuyingError {
     #[msg("You are not in the Whitelist!")]
     NotInWhitelist,
 }
+#[error_code]
+pub enum ProtocolError {
+    #[msg("The Protocol is locked, you can't perform this action")]
+    ProtocolLocked,
+}

@@ -14,8 +14,8 @@ use {
 
 
 use crate::{
-    state::{Placeholder, Collection}, 
-    errors::BuyingError
+    state::{Placeholder, Collection, Protocol}, 
+    errors::{BuyingError, ProtocolError},
 };
 
 #[derive(Accounts)]
@@ -68,6 +68,11 @@ pub struct BuyPlaceholder<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
     pub token_2022_program: Program<'info, Token2022>,
+    #[account(
+        seeds = [b"protocol"],
+        bump,
+    )]
+    pub protocol: Account<'info, Protocol>,
     pub system_program: Program<'info, System>,
 }
 
@@ -76,6 +81,8 @@ impl<'info> BuyPlaceholder<'info> {
         &mut self,
         bumps: BuyPlaceholderBumps,
     ) -> Result<()> {
+
+        require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
 
         let seeds: &[&[u8]; 2] = &[
             b"auth",
@@ -116,6 +123,7 @@ impl<'info> BuyPlaceholder<'info> {
             admin_fee_in_lamports,
         );
 
+        
         invoke(
             &transfer_instruction,
             &[

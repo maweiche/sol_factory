@@ -1,9 +1,12 @@
 use anchor_lang::prelude::*;
 
 use crate::{
-    state::Admin,
+    state::{
+        Admin,
+        Protocol
+    },
     constant,
-    errors::SetupError,
+    errors::{SetupError, ProtocolError},
 };
 
 #[derive(Accounts)]
@@ -27,6 +30,11 @@ pub struct AdminInit<'info> {
     )]
     pub new_admin_state: Account<'info, Admin>,
 
+    #[account(
+        seeds = [b"protocol"],
+        bump,
+    )]
+    pub protocol: Account<'info, Protocol>,
     pub system_program: Program<'info, System>,
 }
 
@@ -50,6 +58,8 @@ impl<'info> AdminInit<'info> {
             account atm in an easy way) and the publickey of the new admin.
 
         */
+        
+        require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
 
         require!(self.admin_state.is_some() || self.admin.key() == constant::multisig_wallet::id(), SetupError::Unauthorized);
         

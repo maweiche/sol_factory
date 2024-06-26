@@ -22,8 +22,8 @@ pub use spl_token_metadata_interface::{
 };
 
 
-pub use crate::state::{Collection, Admin, Placeholder};
-pub use crate::errors::BuyingError;
+pub use crate::state::{Protocol, Collection, Admin, Placeholder};
+pub use crate::errors::{BuyingError, ProtocolError};
 
 #[derive(Accounts)]
 #[instruction(id: u64)]
@@ -69,6 +69,11 @@ pub struct CreatePlaceholder<'info> {
     /// CHECK: this is fine since we are hard coding the rent sysvar.
     pub rent: UncheckedAccount<'info>,
     pub token_2022_program: Program<'info, Token2022>,
+    #[account(
+        seeds = [b"protocol"],
+        bump,
+    )]
+    pub protocol: Account<'info, Protocol>,
     pub system_program: Program<'info, System>,
 }
 
@@ -80,6 +85,8 @@ impl<'info> CreatePlaceholder<'info> {
         bumps: CreatePlaceholderBumps,
     ) -> Result<()> {
 
+        require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
+        
         if self.collection.total_supply >= self.collection.max_supply {
             return Err(BuyingError::SoldOut.into());
         }
