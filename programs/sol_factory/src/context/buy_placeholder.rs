@@ -115,8 +115,9 @@ impl<'info> BuyPlaceholder<'info> {
         );
 
         // The 2nd transfer instruction is the fee for the mint since the admin wallet is the payer of second mint
-        let admin_fee = 0.05;
-        let admin_fee_in_lamports = (amount_in_lamports as f64 * admin_fee) as u64;
+        // current cost to mint placeholder + nft + burn placeholder = ~0.02 - 0.03 SOL
+        let admin_fee = 0.075;
+        let admin_fee_in_lamports = admin_fee as u64 * LAMPORTS_PER_SOL;
         let transfer_instruction_two = system_instruction::transfer(
             &self.buyer.key(),
             &self.payer.key(),

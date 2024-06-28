@@ -16,6 +16,7 @@ import {
   TransactionInstruction,
   VersionedTransaction,
   TransactionMessage,
+  LAMPORTS_PER_SOL
 } from "@solana/web3.js";
 
 import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
@@ -23,7 +24,9 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, g
 describe("sol_factory", () => {
   const wallet = anchor.Wallet.local();
   const provider = anchor.getProvider();
-  const connection = new Connection("https://api.devnet.solana.com", "finalized");
+  // const connection = new Connection("https://api.devnet.solana.com", "finalized");
+  const connection = new Connection("http://localhost:8899", "finalized");
+  
   const programId = new PublicKey("4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt");
 
   const program = new anchor.Program<SolFactory>(IDL, programId, provider);
@@ -51,7 +54,8 @@ describe("sol_factory", () => {
 
   const collection_keypair = require('../test-wallet/keypair3.json')
   const collection_wallet = Keypair.fromSecretKey(Uint8Array.from(collection_keypair))
-  const collection = PublicKey.findProgramAddressSync([Buffer.from('collection'), wallet.publicKey.toBuffer()], program.programId)[0];
+  console.log('collection_wallet', collection_wallet.publicKey.toBase58()); 
+  const collection = PublicKey.findProgramAddressSync([Buffer.from('collection'), collection_wallet.publicKey.toBuffer()], program.programId)[0];
 
   //  console.log('all_program_accounts', all_program_accounts)
   const id = Math.floor(Math.random() * 100000);
@@ -64,7 +68,7 @@ describe("sol_factory", () => {
   const auth = PublicKey.findProgramAddressSync([Buffer.from('auth')], program.programId)[0];
   const adminState = PublicKey.findProgramAddressSync([Buffer.from('admin_state'), wallet.publicKey.toBuffer()], program.programId)[0];
   console.log('local wallet', wallet.publicKey.toBase58());
-  const buyer_keypair = require('../test-wallet/keypair2.json')
+  const buyer_keypair = require('../test-wallet/keypair.json')
   const buyer = Keypair.fromSecretKey(Uint8Array.from(buyer_keypair))
   console.log('buyer', buyer.publicKey.toBase58());
   const buyer_collection = PublicKey.findProgramAddressSync([Buffer.from('collection'), buyer.publicKey.toBuffer()], program.programId)[0];
@@ -188,10 +192,10 @@ describe("sol_factory", () => {
   //   const symbol = "TT6969";
   //   const sale_start_time = new anchor.BN(Date.now() * 1000); // 1 second from now
   //   const max_supply = new anchor.BN(100);
-  //   const price = new anchor.BN(0.1);
+  //   const price = new anchor.BN(10);
   //   const whitelist_price = new anchor.BN(0);
-  //   const stable_id = "TST233323232";
-  //   const reference = "TST456";
+  //   const stable_id = "TST2333232131";
+  //   const reference = "TST4571";
   //   const date_i64 = new anchor.BN(Date.now() * 1000); // 1 second from now
   //   const yesterday_date_i64 = new anchor.BN(Date.now() * 1000 - 86400000);
     
@@ -207,7 +211,7 @@ describe("sol_factory", () => {
   //     return publicKeys;
   //   }
 
-  //   const publicKeys = await generatePublicKeys();
+    // const publicKeys = await generatePublicKeys();
   //   try{
 
   //     const createCollectionIx = await program.methods
@@ -220,12 +224,12 @@ describe("sol_factory", () => {
   //         max_supply,
   //         price,
   //         stable_id,
-  //         publicKeys,
+  //         [],
   //         yesterday_date_i64,
   //         whitelist_price
   //       )
   //       .accounts({
-  //         owner: wallet.publicKey,
+  //         owner: collection_wallet.publicKey,
   //         collection: collection,
   //         protocol: protocol,
   //         systemProgram: SystemProgram.programId,
@@ -233,9 +237,11 @@ describe("sol_factory", () => {
   //       .instruction()
 
   //     const tx = new anchor.web3.Transaction().add(createCollectionIx);
-  //     await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  //     // tx.partialSign(collection_wallet);
+  //     // console.log('tx partial sign', tx)
+  //     await sendAndConfirmTransaction(connection, tx, [wallet.payer, collection_wallet], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
 
-  //     getAllCollections();
+  //     // getAllCollections();
   //   } catch (error) {
   //     console.log('error', error)
   //   }
@@ -243,7 +249,9 @@ describe("sol_factory", () => {
 
   // it("Create Placeholder", async () => {
   //   const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
-    
+  //   console.log('FEE PAYER SOL BALANCE TO START: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+  //   console.log('BUYER SOL BALANCE TO START: ', (await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL);
+  //   console.log('COLLECTION WALLET SOL BALANCE TO START: ', (await connection.getBalance(collection_wallet.publicKey)) / LAMPORTS_PER_SOL);
   //   const createListingIx = await program.methods
   //   .createPlaceholder(
   //     new anchor.BN(id),
@@ -295,14 +303,17 @@ describe("sol_factory", () => {
   // });
 
   // it("Buy Placeholder", async () => {
+  //   console.log('FEE PAYER SOL BALANCE TO START: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+  //   console.log('BUYER SOL BALANCE TO START: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
+  //   console.log('COLLECTION WALLET SOL BALANCE TO START: ', ((await connection.getBalance(collection_wallet.publicKey)) / LAMPORTS_PER_SOL));
   //   const transaction = new Transaction().add(
   //     await program.methods
   //     .buyPlaceholder()
   //     .accounts({
-  //       payer: buyer.publicKey,
+  //       payer: wallet.publicKey,
   //       buyer: buyer.publicKey,
   //       collection: collection,
-  //       collectionOwner: buyer.publicKey,
+  //       collectionOwner: collection_wallet.publicKey,
   //       buyerMintAta: buyerPlaceholderAta,
   //       placeholder: placeholder,
   //       mint: placeholder_mint,
@@ -310,16 +321,77 @@ describe("sol_factory", () => {
   //       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
   //       tokenProgram: TOKEN_PROGRAM_ID,
   //       token2022Program: TOKEN_2022_PROGRAM_ID,
-  //         protocol: protocol,
+  //       protocol: protocol,
   //       systemProgram: SystemProgram.programId,
   //     })
   //     .instruction()
   //   );
     
-  //   await sendAndConfirmTransaction(connection, transaction, [buyer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  //   await sendAndConfirmTransaction(connection, transaction, [buyer, wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+    
+
+  //   console.log('FEE PAYER SOL BALANCE AFTER: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+  //   console.log('BUYER SOL BALANCE AFTER: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
+  //   console.log('COLLECTION WALLET SOL BALANCE AFTER: ', ((await connection.getBalance(collection_wallet.publicKey)) / LAMPORTS_PER_SOL));
   // });
 
   // it("Create Nft", async () => {
+  //   // ADD IN THE FETCH OF THE URL FROM THE DECODED COLLECTION DATA
+  //   const url = await getCollectionUrl(collection);
+  //   console.log('FEE PAYER SOL BALANCE TO START: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+
+  //   const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
+
+  //   // url for fetch: https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c
+  //   // headers: "x-authorization: Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
+  //   // const url =  "https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c"
+  //   const nft_data = await fetch(url, {
+  //     headers: {
+  //       "x-authorization" : "Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
+  //     }
+  //   })
+
+  //   const metadata_json: any = await nft_data.json(); 
+
+  //   const attributes = metadata_json.attributes.map((attr: any) => {
+  //     return {key: attr.trait_type, value: attr.value}
+  //   })
+
+  //   const areweave_metadata: any = await fetch(metadata_json.metadataUrl)
+  //   const areweave_json = await areweave_metadata.json()
+
+  //   const nft_name = areweave_json.name;
+
+  //   const createListingIx = await program.methods
+  //   .createNft(
+  //     new anchor.BN(id),
+  //     metadata_json.metadataUrl,
+  //     nft_name,
+  //     attributes,
+  //   )
+  //   .accounts({
+  //     admin: wallet.publicKey,
+  //     adminState,   
+  //     collection: collection,
+  //     nft: nft,
+  //     mint: nft_mint,
+  //     auth,
+  //     rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+  //     token2022Program: TOKEN_2022_PROGRAM_ID,
+  //     protocol: protocol,
+  //     systemProgram: SystemProgram.programId,
+  //   })
+  //   .instruction()
+
+  //   const tx = new anchor.web3.Transaction().add(modifyComputeUnitIx).add(createListingIx);
+  //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+
+  //   console.log('FEE PAYER SOL BALANCE AFTER: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+  // });
+
+  // it("Create Nft", async () => {
+  //   console.log('FEE PAYER SOL BALANCE TO START: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+
   //   // ADD IN THE FETCH OF THE URL FROM THE DECODED COLLECTION DATA
   //   const url = await getCollectionUrl(collection);
     
@@ -368,9 +440,13 @@ describe("sol_factory", () => {
 
   //   const tx = new anchor.web3.Transaction().add(modifyComputeUnitIx).add(createListingIx);
   //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+
+  //   console.log('FEE PAYER SOL BALANCE AFTER: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
   // });
 
   // it("Transfer Nft and Burn Placeholder", async () => {
+  //   console.log('FEE PAYER SOL BALANCE TO START: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+
   //   const transaction = new Transaction().add(
   //     await program.methods
   //     .transferNft()
@@ -397,9 +473,15 @@ describe("sol_factory", () => {
   //   transaction.feePayer = wallet.publicKey;
     
   //   await sendAndConfirmTransaction(connection, transaction, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+
+  //   console.log('FEE PAYER SOL BALANCE AFTER: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
   // });
 
   it("Should Complete everything in one txn", async () => {
+    console.log('FEE PAYER SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+    console.log('BUYER SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
+    console.log('COLLECTION WALLET SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(collection_wallet.publicKey)) / LAMPORTS_PER_SOL));
+
     const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 600_000 });
     const createPlaceholderIx = await program.methods
       .createPlaceholder(
@@ -423,10 +505,10 @@ describe("sol_factory", () => {
     const buyPlaceholderIx = await program.methods
       .buyPlaceholder()
       .accounts({
-        payer: buyer.publicKey,
+        payer: wallet.publicKey,
         buyer: buyer.publicKey,
         collection: collection,
-        collectionOwner: buyer.publicKey,
+        collectionOwner: collection_wallet.publicKey,
         buyerMintAta: buyerPlaceholderAta,
         placeholder: placeholder,
         mint: placeholder_mint,
@@ -516,7 +598,7 @@ describe("sol_factory", () => {
           .getLatestBlockhash({ commitment: 'max' })
           .then((res) => res.blockhash);
         const messageV0 = new TransactionMessage({
-          payerKey: wallet.publicKey,
+          payerKey: buyer.publicKey,
           recentBlockhash: blockhash,
           instructions
         }).compileToV0Message();
@@ -530,6 +612,8 @@ describe("sol_factory", () => {
         );
 
         console.log(`Transaction ID: ${txId}`);
+
+        console.log('BUYER SOL BALANCE AFTER SINGLE TXN: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
   })  
 });
 
