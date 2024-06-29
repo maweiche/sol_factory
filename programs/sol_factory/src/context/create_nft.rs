@@ -5,21 +5,16 @@ pub use anchor_lang::{
     },
     prelude::*
 };
-
 pub use anchor_spl::token_2022::Token2022;
-
 pub use spl_token_2022::{
     extension::ExtensionType,
     instruction::{initialize_mint_close_authority, initialize_mint2},
     extension::metadata_pointer::instruction::initialize as initialize_metadata_pointer
 };
-
 pub use spl_token_metadata_interface::{
     state::{TokenMetadata, Field},
     instruction::{initialize as initialize_metadata_account, update_field as update_metadata_account},
 };
-
-
 pub use crate::state::{Protocol, Collection, Admin, AiNft, Attributes};
 pub use crate::errors::ProtocolError;
 
@@ -33,7 +28,6 @@ pub struct CreateNft<'info> {
         bump
     )]
     pub admin_state: Account<'info, Admin>,
-    
     #[account(
         seeds = [b"collection", collection.owner.key().as_ref()],
         bump,
@@ -47,7 +41,6 @@ pub struct CreateNft<'info> {
         space = AiNft::INIT_SPACE + attributes.iter().map(|attr| attr.key.len() + attr.value.len()).sum::<usize>(),
     )] 
     pub nft: Account<'info, AiNft>,
-
     /// CHECK: this is fine since we are handling all the checks and creation in the program.
     #[account(
         mut,
@@ -55,14 +48,12 @@ pub struct CreateNft<'info> {
         bump
     )]
     pub mint: UncheckedAccount<'info>,
-
     /// CHECK:
     #[account(
         seeds = [b"auth"],
         bump
     )]
     pub auth: UncheckedAccount<'info>,
-
     #[account(address = RENT_ID)]
     /// CHECK: this is fine since we are hard coding the rent sysvar.
     pub rent: UncheckedAccount<'info>,
@@ -85,7 +76,19 @@ impl<'info> CreateNft<'info> {
         bumps: CreateNftBumps,
     ) -> Result<()> {
 
+        /*
+        
+            Create AI Nft Ix:
+
+            Some security check:
+            - The admin_state.publickey must match the signing admin.
+
+            What these Instructions do:
+            - Creates a AI NFT from the passed in uri, name, and attributes.
+        */
+
         require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
+        require!(self.admin_state.publickey == *self.admin.key, ProtocolError::UnauthorizedAdmin);
 
         self.nft.set_inner(
             AiNft {
@@ -94,12 +97,8 @@ impl<'info> CreateNft<'info> {
                 reference: self.collection.reference.to_string(),
                 price: self.collection.price,
                 time_stamp: Clock::get()?.unix_timestamp,
-                inscription: "none".to_string(),
-                rank: self.collection.total_supply as u16,
             }
         );
-
-        /* Token2022 Gibberish */
 
         // Step 1: Initialize Account
         let size = ExtensionType::try_calculate_account_len::<spl_token_2022::state::Mint>(

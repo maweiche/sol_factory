@@ -19,4 +19,6 @@ pub enum BuyingError {
 pub enum ProtocolError {
     #[msg("The Protocol is locked, you can't perform this action")]
     ProtocolLocked,
+    #[msg("You are not authorized to perform this action")]
+    UnauthorizedAdmin,
 }

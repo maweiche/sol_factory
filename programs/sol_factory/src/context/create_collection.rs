@@ -1,8 +1,6 @@
 use anchor_lang::prelude::*;
-
-use crate::state::{Collection, Protocol};
+use crate::state::{Collection, Protocol, Admin};
 use crate::errors::ProtocolError;
-use crate::state::WhiteList;
 
 #[derive(Accounts)]
 #[instruction(
@@ -14,11 +12,10 @@ use crate::state::WhiteList;
     max_supply: u64,
     price: u64,
     stable_id: String,
-    whitelist: Vec<Pubkey>,
-    whitelist_start_time: i64,
-    whitelist_price: u64,
 )]
 pub struct CreateCollection<'info> {
+    #[account(mut)]
+    pub admin: Signer<'info>,
     #[account(mut)]
     pub owner: Signer<'info>,
     #[account(
@@ -26,9 +23,14 @@ pub struct CreateCollection<'info> {
         seeds = [b"collection", owner.key().as_ref()],
         bump,
         payer = owner,
-        space = Collection::INIT_SPACE + 54 + url.len() + name.len() + stable_id.len() + (whitelist.len() * 32) as usize,
+        space = Collection::INIT_SPACE + 54 + url.len() + name.len() + stable_id.len(),
     )] 
     pub collection: Account<'info, Collection>,
+    #[account(
+        seeds = [b"admin_state", admin.key().as_ref()],
+        bump
+    )]
+    pub admin_state: Account<'info, Admin>,
     #[account(
         seeds = [b"protocol"],
         bump,
@@ -48,13 +50,21 @@ impl<'info> CreateCollection<'info> {
         max_supply: u64,
         price: u64,
         stable_id: String,
-        whitelist: Vec<Pubkey>,
-        whitelist_start_time: i64,
-        whitelist_price: u64,
-
     ) -> Result<()> {
 
+        /*
+        
+            Create Collection Ix:
+
+            Some security check:
+            - The admin_state.publickey must match the signing admin.
+
+            What these Instructions do:
+            - Creates a Collection that can be used to mint NFTs.
+        */
+
         require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
+        require!(self.admin_state.publickey == *self.admin.key, ProtocolError::UnauthorizedAdmin);
 
         self.collection.set_inner(
             Collection {
@@ -68,11 +78,6 @@ impl<'info> CreateCollection<'info> {
                 total_supply: 0,
                 price,
                 stable_id,
-                whitelist: WhiteList {
-                    wallets: whitelist,
-                },
-                whitelist_start_time,
-                whitelist_price,
             }
         );
 

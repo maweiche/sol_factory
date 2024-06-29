@@ -4,6 +4,9 @@
 seeds = false
 skip-lint = false
 
+[programs.localnet]
+sol_factory = "4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt"
+
 [programs.devnet]
 sol_factory = "4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt"
 
@@ -11,7 +14,7 @@ sol_factory = "4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "/Users/matt/.config/solana/id.json"
 
 [scripts]

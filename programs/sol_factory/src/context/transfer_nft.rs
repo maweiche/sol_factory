@@ -21,7 +21,6 @@ pub struct TransferNft<'info> {
     pub buyer: AccountInfo<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
-
     #[account(
         mut,
         seeds = [
@@ -34,14 +33,12 @@ pub struct TransferNft<'info> {
     )]
     /// CHECK
     pub buyer_mint_ata: UncheckedAccount<'info>,
-    
     #[account(
         mut,
         seeds = [b"ainft", nft.collection.key().as_ref(), nft.id.to_le_bytes().as_ref()],
         bump,
     )] 
     pub nft: Account<'info, AiNft>,
-
     #[account(
         mut,
         seeds = [b"mint", nft.key().as_ref()],
@@ -49,21 +46,17 @@ pub struct TransferNft<'info> {
     )]
     /// CHECK
     pub mint: UncheckedAccount<'info>,
-
     #[account(
         seeds = [b"collection", collection.owner.key().as_ref()],
         bump,
     )] 
     pub collection: Account<'info, Collection>,
-
     #[account(
         seeds = [b"auth"],
         bump
     )]
     /// CHECK:
     pub auth: UncheckedAccount<'info>,
-
-    // *************
     #[account(
         mut,
         seeds = [
@@ -82,7 +75,6 @@ pub struct TransferNft<'info> {
         bump,
     )] 
     pub placeholder: Account<'info, Placeholder>,
-
     #[account(
         mut,
         seeds = [b"mint", placeholder.key().as_ref()],
@@ -91,8 +83,6 @@ pub struct TransferNft<'info> {
     /// CHECK
     pub placeholder_mint: UncheckedAccount<'info>,
     pub placeholder_mint_authority: Signer<'info>,
-    // *************
-
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
     pub token_2022_program: Program<'info, Token2022>,
@@ -110,20 +100,20 @@ impl<'info> TransferNft<'info> {
         bumps: TransferNftBumps,
     ) -> Result<()> {
 
-        require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
+        /*
+        
+            Transfer Nft Ix:
 
-        // sale_start_time and whitelist_start_time are both unix timestamps converted to big numbers
-        // if it is before the sale start time, we should check to see if the whitelist is active, if it is not we should throw an error,
-        // if it is active we should check to see if the buyer is in the whitelist, if they are not we should throw an error
-        // if self.collection.sale_start_time > Clock::get()?.unix_timestamp {
-        //     if self.collection.whitelist_start_time < Clock::get()?.unix_timestamp {
-        //         if !self.collection.whitelist.wallets.contains(&self.buyer.key()) {
-        //             return Err(BuyingError::NotInWhitelist.into());
-        //         }
-        //     } else {
-        //         return Err(BuyingError::NotTimeYet.into());
-        //     }
-        // }
+            Some security check:
+            - The authority of the burn instruction must be admin of the protocol.
+
+            What these Instructions do:
+            - Initialize the transfer of the created Ai NFT.
+            - Burn the Placeholder NFT.
+        */
+
+        // Check if the protocol is locked, if it is, return an error
+        require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
 
         let seeds: &[&[u8]; 2] = &[
             b"auth",
@@ -175,12 +165,7 @@ impl<'info> TransferNft<'info> {
             None
         )?;
 
-        let whitelist = &mut self.collection.whitelist.wallets;
-        // if the buyer is in the whitelist, remove them
-        if whitelist.contains(&self.buyer.key()) {
-            whitelist.retain(|&x| x != self.buyer.key());
-        }
-
+        // Burn the placeholder nft
         let ix = burn(
             &self.token_2022_program.key,
             self.buyer_placeholder_mint_ata.key,
