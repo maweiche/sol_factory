@@ -1,3 +1,4 @@
+# Sol Factory - Solana Program
 A Solana program built for use in correlation with the [Sol Ai SDK](https://npmjs.com) and Generative AI Art platforms.
 
 Below you can find instructions to running the program locally followed by a deeper dive into the program's structure and details.
