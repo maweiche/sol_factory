@@ -352,11 +352,11 @@ describe("sol_factory", () => {
   //   const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
 
   //   // url for fetch: https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c
-  //   // headers: "x-authorization: Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
+  //   // headers: "x-authorization: Bearer "
   //   // const url =  "https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c"
   //   const nft_data = await fetch(url, {
   //     headers: {
-  //       "x-authorization" : "Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
+  //       "x-authorization" : "Bearer "
   //     }
   //   })
 
@@ -408,11 +408,11 @@ describe("sol_factory", () => {
   //   const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
 
   //   // url for fetch: https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c
-  //   // headers: "x-authorization: Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
+  //   // headers: "x-authorization: Bearer "
   //   // const url =  "https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c"
   //   const nft_data = await fetch(url, {
   //     headers: {
-  //       "x-authorization" : "Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
+  //       "x-authorization" : "Bearer "
   //     }
   //   })
 
@@ -541,11 +541,11 @@ describe("sol_factory", () => {
       const url = await getCollectionUrl(collection);
 
       // url for fetch: https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c
-      // headers: "x-authorization: Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
+      // headers: "x-authorization: Bearer "
       // const url =  "https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c"
       const nft_data = await fetch(url, {
         headers: {
-          "x-authorization" : "Bearer ad4a356ddba9eff73cd627f69a481b8493ed975d7aac909eec4aaebdd9b506ef"
+          "x-authorization" : "Bearer "
         }
       })
 
