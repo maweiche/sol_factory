@@ -1,5 +1,4 @@
 use solana_program::native_token::LAMPORTS_PER_SOL;
-
 use {
     anchor_lang::prelude::*,
     anchor_spl::{
@@ -10,9 +9,6 @@ use {
     },
     solana_program::{system_instruction, program::invoke},
 };
-
-
-
 use crate::{
     state::{Placeholder, Collection, Protocol}, 
     errors::{BuyingError, ProtocolError},
@@ -29,7 +25,6 @@ pub struct BuyPlaceholder<'info> {
     /// CHECK
     #[account(mut)]
     pub collection_owner: AccountInfo<'info>,
-
     #[account(
         mut,
         seeds = [
@@ -42,14 +37,12 @@ pub struct BuyPlaceholder<'info> {
     )]
     /// CHECK
     pub buyer_mint_ata: UncheckedAccount<'info>,
-    
     #[account(
         mut,
         seeds = [b"placeholder", placeholder.collection.key().as_ref(), placeholder.id.to_le_bytes().as_ref()],
         bump,
     )] 
     pub placeholder: Account<'info, Placeholder>,
-
     #[account(
         mut,
         seeds = [b"mint", placeholder.key().as_ref()],
@@ -57,14 +50,12 @@ pub struct BuyPlaceholder<'info> {
     )]
     /// CHECK
     pub mint: UncheckedAccount<'info>,
-
     #[account(
         seeds = [b"auth"],
         bump
     )]
     /// CHECK:
     pub auth: UncheckedAccount<'info>,
-
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Program<'info, Token>,
     pub token_2022_program: Program<'info, Token2022>,
@@ -81,6 +72,19 @@ impl<'info> BuyPlaceholder<'info> {
         &mut self,
         bumps: BuyPlaceholderBumps,
     ) -> Result<()> {
+
+        /*
+        
+            Buy Placeholder Nft Ix:
+
+            Some security check:
+            - The admin_state.publickey must match the signing admin.
+
+            What these Instructions do:
+            - Creates a transfer of a placeholder NFT.
+            - Invokes a transfer of SOL (price of mint + adminFee) from the buyer to the collection owner & admin.
+            - Increase the total_supply on the collection (total minted nfts).
+        */
 
         require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
 
@@ -99,12 +103,6 @@ impl<'info> BuyPlaceholder<'info> {
             self.collection.max_supply > self.collection.total_supply,
             BuyingError::SoldOut
         );
-
-        // Currency Checks
-        // require!(self.currency.key() == ) - TODO
-
-        // Listing Check
-        // require!(self.listing.share_sold == self.mint.supply) - TODO
 
         // Pay the mint
         let amount_in_lamports = (self.placeholder.price * LAMPORTS_PER_SOL) as u64;
@@ -172,7 +170,6 @@ impl<'info> BuyPlaceholder<'info> {
             1,
         )?;
         
-        // set the collection.total_supply += 1
         self.collection.total_supply += 1;
 
         set_authority(

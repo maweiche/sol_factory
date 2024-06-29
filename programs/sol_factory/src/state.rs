@@ -21,7 +21,6 @@ impl Space for Admin {
     const INIT_SPACE: usize = 8 + 32 + 4 + 8;
 }
 
-// Fragment State
 #[account]
 pub struct Collection {
     pub reference: Pubkey,
@@ -34,9 +33,6 @@ pub struct Collection {
     pub total_supply: u64,
     pub price: u64,
     pub stable_id: String,
-    pub whitelist: WhiteList,
-    pub whitelist_start_time: i64,
-    pub whitelist_price: u64,
 }
 
 impl Space for Collection {
@@ -79,9 +75,6 @@ pub struct AiNft {
     pub reference: String,
     pub price: u64,
     pub time_stamp: i64,
-    // pub inscription: Pubkey,
-    pub inscription: String,
-    pub rank: u16,
 }
 
 impl Space for AiNft {

@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-
 use crate::{
     state::Protocol,
     constant::multisig_wallet,
@@ -10,7 +9,6 @@ use crate::{
 pub struct ProtocolSetting<'info> {
     #[account(mut)]
     pub admin: Signer<'info>,
-
     #[account(
         init_if_needed,
         payer = admin,
@@ -19,7 +17,6 @@ pub struct ProtocolSetting<'info> {
         bump,
     )]
     pub protocol: Account<'info, Protocol>,
-
     pub system_program: Program<'info, System>,
 }
 
@@ -35,9 +32,7 @@ impl<'info> ProtocolSetting<'info> {
 
         What these Instructions do:
         - Initialize the Protocol account with the new settings.
-        - Hit the Panic Button: render the protocol useless.
-        - Revoke the Panic Button: render the protocol useful again.
-
+        - Toggle the lock on the Protocol: render the protocol useless/useful.
     */
 
     pub fn initialize_protocol(
@@ -58,7 +53,6 @@ impl<'info> ProtocolSetting<'info> {
         require!(self.admin.key() == multisig_wallet::id(), SetupError::Unauthorized);
         
         self.protocol.locked = !self.protocol.locked;
-
 
         Ok(())
     }

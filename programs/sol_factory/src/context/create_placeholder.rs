@@ -1,5 +1,3 @@
-// THIS CREATES THE PLACEHOLDER NFT THAT WE THEN BURN WHEN AI NFT IS COMPLETE
-
 pub use anchor_lang::{
     solana_program::{
         sysvar::rent::ID as RENT_ID,
@@ -7,21 +5,16 @@ pub use anchor_lang::{
     },
     prelude::*
 };
-
 pub use anchor_spl::token_2022::Token2022;
-
 pub use spl_token_2022::{
     extension::ExtensionType,
     instruction::{initialize_mint_close_authority, initialize_permanent_delegate, initialize_mint2},
     extension::metadata_pointer::instruction::initialize as initialize_metadata_pointer,
 };
-
 pub use spl_token_metadata_interface::{
     state::{TokenMetadata, Field},
     instruction::{initialize as initialize_metadata_account, update_field as update_metadata_account},
 };
-
-
 pub use crate::state::{Protocol, Collection, Admin, Placeholder};
 pub use crate::errors::{BuyingError, ProtocolError};
 
@@ -35,7 +28,6 @@ pub struct CreatePlaceholder<'info> {
         bump
     )]
     pub admin_state: Account<'info, Admin>,
-    
     #[account(
         seeds = [b"collection", collection.owner.key().as_ref()],
         bump,
@@ -49,7 +41,6 @@ pub struct CreatePlaceholder<'info> {
         space = Placeholder::INIT_SPACE + 32 + collection.name.len() + collection.symbol.len() + 8 + 8,
     )] 
     pub placeholder: Account<'info, Placeholder>,
-
     /// CHECK: this is fine since we are handling all the checks and creation in the program.
     #[account(
         mut,
@@ -57,14 +48,12 @@ pub struct CreatePlaceholder<'info> {
         bump
     )]
     pub mint: UncheckedAccount<'info>,
-
     /// CHECK:
     #[account(
         seeds = [b"auth"],
         bump
     )]
     pub auth: UncheckedAccount<'info>,
-
     #[account(address = RENT_ID)]
     /// CHECK: this is fine since we are hard coding the rent sysvar.
     pub rent: UncheckedAccount<'info>,
@@ -84,8 +73,19 @@ impl<'info> CreatePlaceholder<'info> {
         uri: String,
         bumps: CreatePlaceholderBumps,
     ) -> Result<()> {
+        /*
+        
+            Create Placeholder Nft Ix:
+
+            Some security check:
+            - The admin_state.publickey must match the signing admin.
+
+            What these Instructions do:
+            - Creates a placeholder NFT.
+        */
 
         require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
+        require!(self.admin_state.publickey == *self.admin.key, ProtocolError::UnauthorizedAdmin);
         
         if self.collection.total_supply >= self.collection.max_supply {
             return Err(BuyingError::SoldOut.into());
@@ -101,8 +101,6 @@ impl<'info> CreatePlaceholder<'info> {
                 time_stamp: Clock::get()?.unix_timestamp
             }
         );
-
-        /* Token2022 Gibberish */
 
         // Step 1: Initialize Account
         let size = ExtensionType::try_calculate_account_len::<spl_token_2022::state::Mint>(

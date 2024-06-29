@@ -4,6 +4,7 @@ import { IDL, SolFactory } from "../target/types/sol_factory";
 
 import {
   PublicKey,
+  Ed25519Program,
   SystemProgram,
   ComputeBudgetProgram,
   sendAndConfirmTransaction,
@@ -23,9 +24,21 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, g
 
 describe("sol_factory", () => {
   const wallet = anchor.Wallet.local();
+  console.log('local wallet', wallet.publicKey.toBase58());
+
+  const buyer_keypair = require('../test-wallet/keypair.json')
+  const buyer = Keypair.fromSecretKey(Uint8Array.from(buyer_keypair))
+  console.log('buyer', buyer.publicKey.toBase58());
+
+  const collection_keypair = require('../test-wallet/keypair3.json')
+  const collection_wallet = Keypair.fromSecretKey(Uint8Array.from(collection_keypair))
+  console.log('collection_wallet', collection_wallet.publicKey.toBase58()); 
+
+
   const provider = anchor.getProvider();
-  // const connection = new Connection("https://api.devnet.solana.com", "finalized");
-  const connection = new Connection("http://localhost:8899", "finalized");
+
+  // const connection = new Connection("https://api.devnet.solana.com", "finalized"); // DEVNET
+  const connection = new Connection("http://localhost:8899", "finalized"); // LOCALHOST
   
   const programId = new PublicKey("4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt");
 
@@ -52,9 +65,7 @@ describe("sol_factory", () => {
 
   const protocol = PublicKey.findProgramAddressSync([Buffer.from('protocol')], program.programId)[0];
 
-  const collection_keypair = require('../test-wallet/keypair3.json')
-  const collection_wallet = Keypair.fromSecretKey(Uint8Array.from(collection_keypair))
-  console.log('collection_wallet', collection_wallet.publicKey.toBase58()); 
+  
   const collection = PublicKey.findProgramAddressSync([Buffer.from('collection'), collection_wallet.publicKey.toBuffer()], program.programId)[0];
 
   //  console.log('all_program_accounts', all_program_accounts)
@@ -67,10 +78,9 @@ describe("sol_factory", () => {
   
   const auth = PublicKey.findProgramAddressSync([Buffer.from('auth')], program.programId)[0];
   const adminState = PublicKey.findProgramAddressSync([Buffer.from('admin_state'), wallet.publicKey.toBuffer()], program.programId)[0];
-  console.log('local wallet', wallet.publicKey.toBase58());
-  const buyer_keypair = require('../test-wallet/keypair.json')
-  const buyer = Keypair.fromSecretKey(Uint8Array.from(buyer_keypair))
-  console.log('buyer', buyer.publicKey.toBase58());
+  
+  
+  
   const buyer_collection = PublicKey.findProgramAddressSync([Buffer.from('collection'), buyer.publicKey.toBuffer()], program.programId)[0];
   const buyer_placeholder = PublicKey.findProgramAddressSync([Buffer.from('placeholder'), buyer_collection.toBuffer(), new anchor.BN(id).toBuffer("le", 8)], program.programId)[0];
   const buyer_placeholder_mint = PublicKey.findProgramAddressSync([Buffer.from('mint'), buyer_placeholder.toBuffer()], program.programId)[0];
@@ -131,7 +141,7 @@ describe("sol_factory", () => {
 
   //   const transaction = new Transaction().add(
   //     await program.methods
-  //     .intializeProtocolAccount()
+  //     .initializeProtocolAccount()
   //     .accounts({
   //       admin: wallet.publicKey,
   //       protocol: protocol,
@@ -201,7 +211,7 @@ describe("sol_factory", () => {
     
   //   const url = "https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c";
 
-  //   // create a function to generate 100 public keys and return them in an array
+    // create a function to generate 100 public keys and return them in an array
   //   async function generatePublicKeys() {
   //     let publicKeys = [];
   //     for (let i = 0; i < 5; i++) {
@@ -211,7 +221,7 @@ describe("sol_factory", () => {
   //     return publicKeys;
   //   }
 
-    // const publicKeys = await generatePublicKeys();
+  //   const publicKeys = await generatePublicKeys();
   //   try{
 
   //     const createCollectionIx = await program.methods
@@ -224,13 +234,12 @@ describe("sol_factory", () => {
   //         max_supply,
   //         price,
   //         stable_id,
-  //         [],
-  //         yesterday_date_i64,
-  //         whitelist_price
   //       )
   //       .accounts({
+  //         admin: wallet.publicKey,
   //         owner: collection_wallet.publicKey,
   //         collection: collection,
+  //         adminState,
   //         protocol: protocol,
   //         systemProgram: SystemProgram.programId,
   //       })
@@ -390,6 +399,7 @@ describe("sol_factory", () => {
   // });
 
   // it("Create Nft", async () => {
+  //   // SHOULD FAIL BECAUSE 2 NFTS CANNOT HAVE THE SAME ID
   //   console.log('FEE PAYER SOL BALANCE TO START: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
 
   //   // ADD IN THE FETCH OF THE URL FROM THE DECODED COLLECTION DATA
@@ -481,6 +491,12 @@ describe("sol_factory", () => {
     console.log('FEE PAYER SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
     console.log('BUYER SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
     console.log('COLLECTION WALLET SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(collection_wallet.publicKey)) / LAMPORTS_PER_SOL));
+
+    // airdrop placeholder to buyer
+    const ed25519Ix = Ed25519Program.createInstructionWithPrivateKey({
+      privateKey: collection_keypair.secretKey,
+      message: Buffer.from("wallet address here"),
+    });
 
     const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 600_000 });
     const createPlaceholderIx = await program.methods

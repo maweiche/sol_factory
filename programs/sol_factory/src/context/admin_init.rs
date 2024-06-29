@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-
 use crate::{
     state::{
         Admin,
@@ -19,7 +18,6 @@ pub struct AdminInit<'info> {
         bump
     )]
     pub admin_state: Option<Account<'info, Admin>>,
-
     pub new_admin: SystemAccount<'info>,
     #[account(
         init,
@@ -29,7 +27,6 @@ pub struct AdminInit<'info> {
         bump
     )]
     pub new_admin_state: Account<'info, Admin>,
-
     #[account(
         seeds = [b"protocol"],
         bump,
@@ -60,7 +57,6 @@ impl<'info> AdminInit<'info> {
         */
         
         require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
-
         require!(self.admin_state.is_some() || self.admin.key() == constant::multisig_wallet::id(), SetupError::Unauthorized);
         
         self.new_admin_state.set_inner(Admin {
