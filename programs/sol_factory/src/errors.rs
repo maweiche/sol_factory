@@ -14,6 +14,8 @@ pub enum BuyingError {
     SoldOut,
     #[msg("You are not in the Whitelist!")]
     NotInWhitelist,
+    #[msg("The airdrop buyer does not match input")]
+    WalletDoesNotMatch,
 }
 #[error_code]
 pub enum ProtocolError {
@@ -21,4 +23,6 @@ pub enum ProtocolError {
     ProtocolLocked,
     #[msg("You are not authorized to perform this action")]
     UnauthorizedAdmin,
+    #[msg("Airdrop instructions not correct")]
+    InstructionsNotCorrect,
 }

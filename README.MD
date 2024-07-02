@@ -9,7 +9,7 @@ Below you can find instructions to running the program locally followed by a dee
 ## Program ID
 | Cluster      | Program Id |
 | :---        |    :----:   |
-| **Localnet**     | `4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt` |
+| **Localnet**     | `6rHuJFF9XCxi9eDHtgJPcBKNpMWyBHhQhrFSkUD5XMYo` |
 | **Devnet**  | `4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt` |
 | **Mainnet**  | ``  |
 
@@ -338,7 +338,7 @@ const placeholderUri: string = "https://gateway.irys.xyz/-mpn67FnEePrsoKez4f6Dvj
 const admin: PublicKey = wallet.publicKey
 const adminState = PublicKey.findProgramAddressSync([Buffer.from('admin_state'), wallet.publicKey.toBuffer()], program.programId)[0];
 
-const owner: PublicKey = collection_wallet.publicKey
+const collectionOwner: PublicKey = collection_wallet.publicKey
 const collection: PublicKey = PublicKey.findProgramAddressSync([Buffer.from('collection'), collection_wallet.publicKey.toBuffer()], program.programId)[0];
 
 const placeholder: PublicKey = PublicKey.findProgramAddressSync([Buffer.from('placeholder'), collection.toBuffer(), new anchor.BN(id).toBuffer("le", 8)], program.programId)[0];
@@ -382,6 +382,7 @@ const token2022Program = TOKEN_2022_PROGRAM_ID
 | :---        |    :----:   |    :----:   |    :----:   |
 | **`createPlaceholder()`**     | id, uri | admin, adminState, collection, placeholder, mint, auth, rent, token2022Program, protocol, systemProgram | creates a placeholder nft from collection |
 | **`buyPlaceholder()`**  | n/a | payer, buyer, collection, collectionOwner, buyerPlaceholderMintAta, placeholder, placeholderMint, auth, associatedTokenProgram, tokenProgram, protocol, systemProgram | invokes sol transfer from signer and transfers placeholder nft to them |
+| **`airdropPlaceholder()`**  | n/a | payer, buyer, collection, collectionOwner, buyerPlaceholderMintAta, placeholder, placeholderMint, auth, associatedTokenProgram, tokenProgram, protocol, systemProgram | only executable by collection owner, transfers placeholder to input wallet address bypassing the mint price and only paying admin fee |
 
 ### NFT
 

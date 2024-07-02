@@ -5,16 +5,16 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-sol_factory = "4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt"
+sol_factory = "6rHuJFF9XCxi9eDHtgJPcBKNpMWyBHhQhrFSkUD5XMYo"
 
 [programs.devnet]
-sol_factory = "4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt"
+sol_factory = "6rHuJFF9XCxi9eDHtgJPcBKNpMWyBHhQhrFSkUD5XMYo"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "/Users/matt/.config/solana/id.json"
 
 [scripts]

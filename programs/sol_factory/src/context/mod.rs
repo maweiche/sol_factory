@@ -18,3 +18,6 @@ pub use create_placeholder::*;
 
 pub mod buy_placeholder;
 pub use buy_placeholder::*;
+
+pub mod airdrop_placeholder;
+pub use airdrop_placeholder::*;

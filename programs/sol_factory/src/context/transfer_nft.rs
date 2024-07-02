@@ -125,7 +125,7 @@ impl<'info> TransferNft<'info> {
         if self.buyer_mint_ata.lamports() == 0 {
             create(
                 CpiContext::new(
-                    self.token_2022_program.to_account_info(), // NEEDS CHANGE TO ATA PROGRAM
+                    self.token_2022_program.to_account_info(),
                     Create {
                         payer: self.payer.to_account_info(), // payer
                         associated_token: self.buyer_mint_ata.to_account_info(),

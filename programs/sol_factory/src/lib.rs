@@ -5,7 +5,7 @@ mod constant;
 mod context;
 use context::*;
 
-declare_id!("4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt");
+declare_id!("6rHuJFF9XCxi9eDHtgJPcBKNpMWyBHhQhrFSkUD5XMYo");
 
 #[program]
 pub mod sol_factory {
@@ -60,6 +60,10 @@ pub mod sol_factory {
 
     pub fn buy_placeholder(ctx: Context<BuyPlaceholder>) -> Result<()> {
         ctx.accounts.buy(ctx.bumps)
+    }
+
+    pub fn airdrop_placeholder(ctx: Context<AirdropPlaceholder>) -> Result<()> {
+        ctx.accounts.airdrop(ctx.bumps)
     }
 }
 
