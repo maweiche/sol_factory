@@ -8,7 +8,7 @@ skip-lint = false
 sol_factory = "6rHuJFF9XCxi9eDHtgJPcBKNpMWyBHhQhrFSkUD5XMYo"
 
 [programs.devnet]
-sol_factory = "6rHuJFF9XCxi9eDHtgJPcBKNpMWyBHhQhrFSkUD5XMYo"
+sol_factory = "3W8Yph6SuCtJjWd2gHHsgy8UJ5FBYTiJBefd3n8oAqKG"
 
 [registry]
 url = "https://api.apr.dev"

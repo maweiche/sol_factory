@@ -88,6 +88,21 @@ impl<'info> BuyPlaceholder<'info> {
 
         require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
 
+        // make sure the current time is greater than the self.collection.sale_start_time 
+        // and make sure the current time is less than the self.collection.sale_end_time
+
+        let current_time = Clock::get()?.unix_timestamp;
+
+        require!(
+            current_time >= self.collection.sale_start_time,
+            BuyingError::NotTimeYet
+        );
+
+        require!(
+            current_time <= self.collection.sale_end_time,
+            BuyingError::Expired
+        );
+
         let seeds: &[&[u8]; 2] = &[
             b"auth",
             &[bumps.auth],
@@ -114,7 +129,7 @@ impl<'info> BuyPlaceholder<'info> {
 
         // The 2nd transfer instruction is the fee for the mint since the admin wallet is the payer of second mint
         // current cost to mint placeholder + nft + burn placeholder = ~0.02 - 0.03 SOL
-        let admin_fee = 0.5;
+        let admin_fee = 0.5;  // 30% of the mint price
         let admin_fee_in_lamports = admin_fee as u64 * LAMPORTS_PER_SOL;
         let transfer_instruction_two = system_instruction::transfer(
             &self.buyer.key(),

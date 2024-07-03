@@ -9,8 +9,8 @@ Below you can find instructions to running the program locally followed by a dee
 ## Program ID
 | Cluster      | Program Id |
 | :---        |    :----:   |
-| **Localnet**     | `6rHuJFF9XCxi9eDHtgJPcBKNpMWyBHhQhrFSkUD5XMYo` |
-| **Devnet**  | `6rHuJFF9XCxi9eDHtgJPcBKNpMWyBHhQhrFSkUD5XMYo` |
+| **Localnet**     | `3W8Yph6SuCtJjWd2gHHsgy8UJ5FBYTiJBefd3n8oAqKG` |
+| **Devnet**  | `3W8Yph6SuCtJjWd2gHHsgy8UJ5FBYTiJBefd3n8oAqKG` |
 | **Mainnet**  | ``  |
 
 ## Description
@@ -132,7 +132,7 @@ The program comes with tests already designed to demo Admin, Artist, and User ac
 ```rust
 /tests/sol_factory.ts
 
-const programId = new PublicKey("4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt");
+const programId = new PublicKey("3W8Yph6SuCtJjWd2gHHsgy8UJ5FBYTiJBefd3n8oAqKG");
 ```
 
 It is also recomended to create a directory at the root level and name it `test-wallet` and place two Keypairs to use in addition to your local Solana CLI wallet for testing.

@@ -29,6 +29,7 @@ pub struct Collection {
     pub owner: Pubkey,
     pub url: String,
     pub sale_start_time: i64,
+    pub sale_end_time: i64,
     pub max_supply: u64,
     pub total_supply: u64,
     pub price: u64,

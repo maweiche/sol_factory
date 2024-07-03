@@ -10,6 +10,8 @@ pub enum SetupError {
 pub enum BuyingError {
     #[msg("Listing is not Live yet, come back later!")]
     NotTimeYet,
+    #[msg("Listing has expired!")]
+    Expired,
     #[msg("The collection is sold out!")]
     SoldOut,
     #[msg("You are not in the Whitelist!")]

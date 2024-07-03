@@ -1,6 +1,9 @@
 pub mod admin_init;
 pub use admin_init::*;
 
+pub mod admin_remove;
+pub use admin_remove::*;
+
 pub mod protocol_setting;
 pub use protocol_setting::*;
 
