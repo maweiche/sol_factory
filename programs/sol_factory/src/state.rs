@@ -39,15 +39,6 @@ impl Space for Collection {
     const INIT_SPACE: usize = 8 + 32 + 4 + 4 + 32 + 4 + 8 + 8 + 8 + 8 + 4 + 4 + 8 + 8; 
 }
 
-#[derive(AnchorDeserialize, AnchorSerialize, Clone)]
-pub struct WhiteList {
-    pub wallets: Vec<Pubkey>,
-}
-
-impl Space for WhiteList {
-    const INIT_SPACE: usize = 8 + 8;
-}
-
 #[account]
 pub struct Placeholder {
     pub id: u64,
