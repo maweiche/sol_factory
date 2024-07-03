@@ -10,7 +10,7 @@ Below you can find instructions to running the program locally followed by a dee
 | Cluster      | Program Id |
 | :---        |    :----:   |
 | **Localnet**     | `6rHuJFF9XCxi9eDHtgJPcBKNpMWyBHhQhrFSkUD5XMYo` |
-| **Devnet**  | `4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt` |
+| **Devnet**  | `6rHuJFF9XCxi9eDHtgJPcBKNpMWyBHhQhrFSkUD5XMYo` |
 | **Mainnet**  | ``  |
 
 ## Description

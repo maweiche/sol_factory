@@ -93,12 +93,12 @@ impl<'info> CreatePlaceholder<'info> {
 
         self.placeholder.set_inner(
             Placeholder {
-                id,
-                collection: self.collection.key(),
-                reference: self.collection.reference.to_string(),
-                name: self.collection.name.clone(),
-                price: self.collection.price,
-                time_stamp: Clock::get()?.unix_timestamp
+                id, // 8
+                collection: self.collection.key(),  //32 bytes
+                reference: self.collection.reference.to_string(), // 4 + len
+                name: self.collection.name.clone(), // 4 + len
+                price: self.collection.price, // 8
+                time_stamp: Clock::get()?.unix_timestamp // 8
             }
         );
 
