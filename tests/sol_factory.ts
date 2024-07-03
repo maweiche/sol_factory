@@ -285,84 +285,84 @@ describe("sol_factory", () => {
 
   
   
-  it("Initialize lock on Protocol", async () => {
-    const protocol = PublicKey.findProgramAddressSync([Buffer.from('protocol')], program.programId)[0];
+  // it("Initialize lock on Protocol", async () => {
+  //   const protocol = PublicKey.findProgramAddressSync([Buffer.from('protocol')], program.programId)[0];
 
-    const transaction = new Transaction().add(
-      await program.methods
-      .initializeProtocolAccount()
-      .accounts({
-        admin: wallet.publicKey,
-        protocol: protocol,
-        systemProgram: SystemProgram.programId,
-      })
-      .instruction()
-    );
+  //   const transaction = new Transaction().add(
+  //     await program.methods
+  //     .initializeProtocolAccount()
+  //     .accounts({
+  //       admin: wallet.publicKey,
+  //       protocol: protocol,
+  //       systemProgram: SystemProgram.programId,
+  //     })
+  //     .instruction()
+  //   );
     
-    await sendAndConfirmTransaction(connection, transaction, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
-  });
+  //   await sendAndConfirmTransaction(connection, transaction, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  // });
 
 
-  it("Change the lock on the Protocol", async () => {
-    const protocol = PublicKey.findProgramAddressSync([Buffer.from('protocol')], program.programId)[0];
+  // it("Change the lock on the Protocol", async () => {
+  //   const protocol = PublicKey.findProgramAddressSync([Buffer.from('protocol')], program.programId)[0];
 
-    const transaction = new Transaction().add(
-      await program.methods
-      .lockProtocol()
-      .accounts({
-        admin: wallet.publicKey,
-        protocol: protocol,
-        systemProgram: SystemProgram.programId,
-      })
-      .instruction()
-    );
+  //   const transaction = new Transaction().add(
+  //     await program.methods
+  //     .lockProtocol()
+  //     .accounts({
+  //       admin: wallet.publicKey,
+  //       protocol: protocol,
+  //       systemProgram: SystemProgram.programId,
+  //     })
+  //     .instruction()
+  //   );
     
-    await sendAndConfirmTransaction(connection, transaction, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
-  });
+  //   await sendAndConfirmTransaction(connection, transaction, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  // });
 
-  it ("Initialize a new Admin", async () => {
-    const username = "MATTW";  // 5 characters MAX
+  // it ("Initialize a new Admin", async () => {
+  //   const username = "MATTW";  // 5 characters MAX
 
-    const createAdminIx = await program.methods
-      .initializeAdminAccount(username)
-      .accounts({
-        admin: wallet.publicKey,
-        adminState: null,
-        newAdmin: wallet.publicKey,
-        newAdminState: adminState,
-        protocol: protocol,
-        systemProgram: SystemProgram.programId, //TYPE: PublicKey
-      })
-      .instruction()
+  //   const createAdminIx = await program.methods
+  //     .initializeAdminAccount(username)
+  //     .accounts({
+  //       admin: wallet.publicKey,
+  //       adminState: null,
+  //       newAdmin: wallet.publicKey,
+  //       newAdminState: adminState,
+  //       protocol: protocol,
+  //       systemProgram: SystemProgram.programId, //TYPE: PublicKey
+  //     })
+  //     .instruction()
 
-    const tx = new anchor.web3.Transaction().add(createAdminIx);
-    await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
-  });
+  //   const tx = new anchor.web3.Transaction().add(createAdminIx);
+  //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  // });
 
-  it ("Initialize a second Admin", async () => {
-    const username = "BAD";  // 5 characters MAX
-    const newAdminState = PublicKey.findProgramAddressSync([Buffer.from('admin_state'), collection_wallet.publicKey.toBuffer()], program.programId)[0];
-    const createAdminIx = await program.methods
-      .initializeAdminAccount(username)
-      .accounts({
-        admin: wallet.publicKey,
-        adminState: adminState,
-        newAdmin: collection_wallet.publicKey,
-        newAdminState: newAdminState,
-        protocol: protocol,
-        systemProgram: SystemProgram.programId, //TYPE: PublicKey
-      })
-      .instruction()
+  // it ("Initialize a second Admin", async () => {
+  //   const username = "BAD";  // 5 characters MAX
+  //   const newAdminState = PublicKey.findProgramAddressSync([Buffer.from('admin_state'), collection_wallet.publicKey.toBuffer()], program.programId)[0];
+  //   const createAdminIx = await program.methods
+  //     .initializeAdminAccount(username)
+  //     .accounts({
+  //       admin: wallet.publicKey,
+  //       adminState: adminState,
+  //       newAdmin: collection_wallet.publicKey,
+  //       newAdminState: newAdminState,
+  //       protocol: protocol,
+  //       systemProgram: SystemProgram.programId, //TYPE: PublicKey
+  //     })
+  //     .instruction()
 
-    const tx = new anchor.web3.Transaction().add(createAdminIx);
-    await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
-  });
+  //   const tx = new anchor.web3.Transaction().add(createAdminIx);
+  //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  // });
 
   it ("Remove second Admin", async () => {
     const badAdmin = collection_wallet.publicKey;
     const badAdminState = PublicKey.findProgramAddressSync([Buffer.from('admin_state'), badAdmin.toBuffer()], program.programId)[0];
     const createAdminIx = await program.methods
-      .closeAdminAccount()
+      .removeAdminAccount()
       .accounts({
         admin: badAdmin,
         adminState: badAdminState,
@@ -376,62 +376,62 @@ describe("sol_factory", () => {
     await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
   });
 
-  it("Create Collection", async () => {
-    console.log('collection to string****', collection.toString())
-    console.log('placeholder to string', placeholder.toString())
-    console.log('placeholder mint to string', placeholder_mint.toString())
-    console.log('nft to string', nft.toString())
-    console.log('auth to string', auth.toString())
-    console.log('adminState to string', adminState.toString())
-    console.log('buyerPlaceholderAta to string', buyerPlaceholderAta.toString())
-    const name = "Test 69 Collection";
-    const symbol = "TT6969";
-    const sale_start_time = new anchor.BN(Date.now() * 1000); // 1 second from now
-    const max_supply = new anchor.BN(100);
-    const price = new anchor.BN(10);
-    const whitelist_price = new anchor.BN(0);
-    const stable_id = "TST2333232131";
-    const reference = "TST4571";
-    const date_i64 = new anchor.BN(Date.now() * 1000); // 1 second from now
-    const date_plus_10_days = new anchor.BN(Date.now() * 1000 + 864000000);
-    const yesterday_date_i64 = new anchor.BN(Date.now() * 1000 - 86400000);
+  // it("Create Collection", async () => {
+  //   console.log('collection to string****', collection.toString())
+  //   console.log('placeholder to string', placeholder.toString())
+  //   console.log('placeholder mint to string', placeholder_mint.toString())
+  //   console.log('nft to string', nft.toString())
+  //   console.log('auth to string', auth.toString())
+  //   console.log('adminState to string', adminState.toString())
+  //   console.log('buyerPlaceholderAta to string', buyerPlaceholderAta.toString())
+  //   const name = "Test 69 Collection";
+  //   const symbol = "TT6969";
+  //   const sale_start_time = new anchor.BN(Date.now() * 1000); // 1 second from now
+  //   const max_supply = new anchor.BN(100);
+  //   const price = new anchor.BN(10);
+  //   const whitelist_price = new anchor.BN(0);
+  //   const stable_id = "TST2333232131";
+  //   const reference = "TST4571";
+  //   const date_i64 = new anchor.BN(Date.now() * 1000); // 1 second from now
+  //   const date_plus_10_days = new anchor.BN(Date.now() * 1000 + 864000000);
+  //   const yesterday_date_i64 = new anchor.BN(Date.now() * 1000 - 86400000);
     
-    const url = "https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c";
+  //   const url = "https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c";
 
-    try{
+  //   try{
 
-      const createCollectionIx = await program.methods
-        .createCollection(
-          collectionRefKey,
-          name,
-          symbol,
-          url,
-          date_i64,
-          date_plus_10_days,
-          max_supply,
-          price,
-          stable_id,
-        )
-        .accounts({
-          admin: wallet.publicKey,
-          owner: collection_wallet.publicKey,
-          collection: collection,
-          adminState,
-          protocol: protocol,
-          systemProgram: SystemProgram.programId,
-        })
-        .instruction()
+  //     const createCollectionIx = await program.methods
+  //       .createCollection(
+  //         collectionRefKey,
+  //         name,
+  //         symbol,
+  //         url,
+  //         date_i64,
+  //         date_plus_10_days,
+  //         max_supply,
+  //         price,
+  //         stable_id,
+  //       )
+  //       .accounts({
+  //         admin: wallet.publicKey,
+  //         owner: collection_wallet.publicKey,
+  //         collection: collection,
+  //         adminState,
+  //         protocol: protocol,
+  //         systemProgram: SystemProgram.programId,
+  //       })
+  //       .instruction()
 
-      const tx = new anchor.web3.Transaction().add(createCollectionIx);
-      // tx.partialSign(collection_wallet);
-      // console.log('tx partial sign', tx)
-      await sendAndConfirmTransaction(connection, tx, [wallet.payer, collection_wallet], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  //     const tx = new anchor.web3.Transaction().add(createCollectionIx);
+  //     // tx.partialSign(collection_wallet);
+  //     // console.log('tx partial sign', tx)
+  //     await sendAndConfirmTransaction(connection, tx, [wallet.payer, collection_wallet], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
 
-      // getAllCollections();
-    } catch (error) {
-      console.log('error', error)
-    }
-  });
+  //     // getAllCollections();
+  //   } catch (error) {
+  //     console.log('error', error)
+  //   }
+  // });
 
   it("Create Placeholder", async () => {
     const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
