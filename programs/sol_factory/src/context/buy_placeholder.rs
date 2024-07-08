@@ -196,8 +196,6 @@ impl<'info> BuyPlaceholder<'info> {
 
         self.collection.total_supply += 1;
 
-
-
         msg!("Total supply: {}", self.collection.total_supply);
 
         set_authority(
