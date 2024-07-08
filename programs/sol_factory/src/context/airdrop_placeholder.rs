@@ -1,7 +1,13 @@
 use {
     anchor_lang::prelude::*,
     anchor_spl::{
-        token_2022::{Token2022, spl_token_2022::instruction::AuthorityType},
+        token_2022::{
+            Token2022, 
+            spl_token_2022::{
+                instruction::AuthorityType,
+                state::Account as TokenAccount,
+                extension::StateWithExtensions,
+            }},
         associated_token::{AssociatedToken, Create, create},
         token::Token,  
         token_interface::{MintTo, mint_to, set_authority, SetAuthority}
@@ -180,6 +186,15 @@ impl<'info> AirdropPlaceholder<'info> {
                             }
                         ),
                         )?;
+
+                        // balance before minting
+                        {
+                            let _before_data = self.buyer_mint_ata.data.borrow();
+                            let _before_state = StateWithExtensions::<TokenAccount>::unpack(&_before_data)?;
+                        
+                            msg!("before mint balance={}", _before_state.base.amount);
+                        }
+                        
             
                         // Mint the mint
                          mint_to(
@@ -209,6 +224,16 @@ impl<'info> AirdropPlaceholder<'info> {
                             AuthorityType::MintTokens, 
                         None
                         )?;
+
+                        // check the post balance of the mint
+                        {
+                            let _after_data = self.buyer_mint_ata.data.borrow();
+                            let _after_state = StateWithExtensions::<TokenAccount>::unpack(&_after_data)?;
+
+                            msg!("after mint balance={}", _after_state.base.amount);
+
+                            require!(_after_state.base.amount == 1, ProtocolError::InvalidBalancePostMint);
+                        }
                     } else {
                         // NO ED25519 instruction
                         Err(ProtocolError::InstructionsNotCorrect)?;
