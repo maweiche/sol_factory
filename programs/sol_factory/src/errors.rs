@@ -27,4 +27,20 @@ pub enum ProtocolError {
     UnauthorizedAdmin,
     #[msg("Airdrop instructions not correct")]
     InstructionsNotCorrect,
+    #[msg("Invalid Sale Time")]
+    InvalidSaleTime,
+    #[msg("Invalid Max Supply")]
+    InvalidMaxSupply,
+    #[msg("Invalid Price")]
+    InvalidPrice,
+    #[msg("Invalid Balance of Token Pre Mint")]
+    InvalidBalancePreMint,
+    #[msg("Invalid Balance of Token Post Mint")]
+    InvalidBalancePostMint,
+    #[msg("Total Supply not increased")]
+    TotalSupplyNotIncreased,
+    #[msg("Invalid balance pre burn")]
+    InvalidBalancePreBurn,
+    #[msg("Invalid balance post burn")]
+    InvalidBalancePostBurn,
 }

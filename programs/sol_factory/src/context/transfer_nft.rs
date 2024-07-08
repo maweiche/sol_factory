@@ -68,7 +68,7 @@ pub struct TransferNft<'info> {
         bump
     )]
     /// CHECK
-    pub buyer_placeholder_mint_ata: UncheckedAccount<'info>,
+    pub buyer_placeholder_mint_ata: AccountInfo<'info>,
     #[account(
         mut,
         seeds = [b"placeholder", placeholder.collection.key().as_ref(), placeholder.id.to_le_bytes().as_ref()],
@@ -122,22 +122,23 @@ impl<'info> TransferNft<'info> {
         let signer_seeds = &[&seeds[..]];
 
         // Initialize ATA if it doesn't exist
-        if self.buyer_mint_ata.lamports() == 0 {
+        if self.buyer_mint_ata.owner != &self.buyer.key() {
             create(
-                CpiContext::new(
-                    self.token_2022_program.to_account_info(),
-                    Create {
-                        payer: self.payer.to_account_info(), // payer
-                        associated_token: self.buyer_mint_ata.to_account_info(),
-                        authority: self.buyer.to_account_info(), // owner
-                        mint: self.mint.to_account_info(),
-                        system_program: self.system_program.to_account_info(),
-                        token_program: self.token_2022_program.to_account_info(),
-                    }
-                ),
+            CpiContext::new(
+                self.token_2022_program.to_account_info(),
+                Create {
+                payer: self.payer.to_account_info(), // payer
+                associated_token: self.buyer_mint_ata.to_account_info(),
+                authority: self.buyer.to_account_info(), // owner
+                mint: self.mint.to_account_info(),
+                system_program: self.system_program.to_account_info(),
+                token_program: self.token_2022_program.to_account_info(),
+                }
+            ),
             )?;
         }
-        
+    
+
         // Mint the mint
         mint_to(
             CpiContext::new_with_signer(
@@ -168,7 +169,7 @@ impl<'info> TransferNft<'info> {
         // Burn the placeholder nft
         let ix = burn(
             &self.token_2022_program.key,
-            self.buyer_placeholder_mint_ata.key,
+            self.buyer_placeholder_mint_ata.to_account_info().key,
             self.placeholder_mint.key,
             &self.auth.key,
             &[&self.auth.key()],
@@ -187,6 +188,7 @@ impl<'info> TransferNft<'info> {
             ],
             &[&seeds[..]],
         )?;
+
 
         Ok(())
     }

@@ -45,7 +45,7 @@ describe("sol_factory", () => {
   const connection = new Connection("https://api.devnet.solana.com", "finalized"); // DEVNET
   // const connection = new Connection("http://localhost:8899", "finalized"); // LOCALHOST
   
-  const programId = new PublicKey("3W8Yph6SuCtJjWd2gHHsgy8UJ5FBYTiJBefd3n8oAqKG");
+  const programId = new PublicKey("8yhDYopWezMx7XQuHgS8JaqkGtqj7cTUw1CUQqPt39bU");
 
   const program = new anchor.Program<SolFactory>(IDL, programId, provider);
   const collectionRefKey = new PublicKey("mwUt7aCktvBeSm8bry6TvqEcNSUGtxByKCbBKfkxAzA");
@@ -94,65 +94,32 @@ describe("sol_factory", () => {
   let buyerPlaceholderAta = getAssociatedTokenAddressSync(placeholder_mint, buyer.publicKey, false, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID)
   let buyerNftAta = getAssociatedTokenAddressSync(nft_mint, buyer.publicKey, false, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID)
 
-  async function getPlaceholderIds(user: PublicKey) {
-    // parse the user's wallet to get the placeholder nfts
-    // the placeholder nfts will all have the same updateAuthority: '3wNUZtJwkQCUn8X5Uxx7DZrokYPRAegUrWYheCknQteK'
+  // async function getPlaceholderIds(user: PublicKey) {
+  //   // parse the user's wallet to get the placeholder nfts
+  //   // the placeholder nfts will all have the same updateAuthority: '3wNUZtJwkQCUn8X5Uxx7DZrokYPRAegUrWYheCknQteK'
     
-    const memcmp_filter: MemcmpFilter = {
-      memcmp: {
-        offset: 52,
-        bytes: collectionRefKey.toBase58()
-      }
-    };
-    const filters:GetProgramAccountsFilter[] = [
-      {
-        dataSize: 170,    //size of account (bytes)
-      },
-      {
-        memcmp: {
-          offset: 32,     //location of our query in the account (bytes)
-          bytes: buyer.publicKey.toBase58(),  //our search criteria, a base58 encoded string
-        }            
-      }
-   ];
+  //   const memcmp_filter: MemcmpFilter = {
+  //     memcmp: {
+  //       offset: 52,
+  //       bytes: collectionRefKey.toBase58()
+  //     }
+  //   };
+  //   const filters:GetProgramAccountsFilter[] = [
+  //     {
+  //       dataSize: 170,    //size of account (bytes)
+  //     },
+  //     {
+  //       memcmp: {
+  //         offset: 32,     //location of our query in the account (bytes)
+  //         bytes: buyer.publicKey.toBase58(),  //our search criteria, a base58 encoded string
+  //       }            
+  //     }
+  //  ];
 
-    const get_accounts_config: GetProgramAccountsConfig = {
-        commitment: "confirmed",
-        filters: [...filters]
-    };
-
-    // get all accounts that the user owns that are placeholders
-    // const user_placeholders = await connection.getProgramAccounts(
-    //   TOKEN_2022_PROGRAM_ID, 
-    //   get_accounts_config
-    // );
-    // console.log('user_placeholders', user_placeholders[0].account.data)
-    // decode the placeholder accounts
-    // const _placeholders = user_placeholders.map((placeholder) => {
-    //     try {
-    //         const decode = program.coder.accounts.decode("Placeholder", placeholder.account.data);
-    //         return decode;
-    //     } catch (error) {
-    //         return null;
-    //     }
-    // })
-
-    // console.log('_placeholders', _placeholders)
-
-    // // get the ids of the placeholders
-    // const ids = _placeholders.map((placeholder) => {
-    //   return placeholder.id;
-    // })
-
-    // return ids;
-  }
-
-  // getPlaceholderIds(
-  //   buyer.publicKey
-  // ).then((ids) => {
-  //   console.log('ids', ids)
-  // });
-
+  //   const get_accounts_config: GetProgramAccountsConfig = {
+  //       commitment: "confirmed",
+  //       filters: [...filters]
+  //   };
 
   async function getCollectionUrl(collection: PublicKey) {
     const collection_data = await connection.getAccountInfo(collection);
@@ -193,12 +160,20 @@ describe("sol_factory", () => {
         }
     })
 
-    // console.log('_collection_decode', _collection_decode)
+    console.log('_collection_decode', _collection_decode)
 
+    const sale_start_time = _collection_decode[0].saleStartTime;
+    console.log('sale start time', sale_start_time)
+    // convert it from bn to date
+    const sale_start_date = sale_start_time.toNumber();
+    console.log('sale start date', sale_start_date)
+    console.log('current time', Date.now())
     return all_collections;
   }
 
-  // getAllCollections();
+  getAllCollections();
+
+  
 
   async function createAndSendV0Tx(txInstructions: TransactionInstruction[]) {
     // Step 1 - Fetch Latest Blockhash
@@ -358,23 +333,23 @@ describe("sol_factory", () => {
   //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
   // });
 
-  it ("Remove second Admin", async () => {
-    const badAdmin = collection_wallet.publicKey;
-    const badAdminState = PublicKey.findProgramAddressSync([Buffer.from('admin_state'), badAdmin.toBuffer()], program.programId)[0];
-    const createAdminIx = await program.methods
-      .removeAdminAccount()
-      .accounts({
-        admin: badAdmin,
-        adminState: badAdminState,
-        primaryAdmin: wallet.publicKey,
-        protocol: protocol,
-        systemProgram: SystemProgram.programId, //TYPE: PublicKey
-      })
-      .instruction()
+  // it ("Remove second Admin", async () => {
+  //   const badAdmin = collection_wallet.publicKey;
+  //   const badAdminState = PublicKey.findProgramAddressSync([Buffer.from('admin_state'), badAdmin.toBuffer()], program.programId)[0];
+  //   const createAdminIx = await program.methods
+  //     .removeAdminAccount()
+  //     .accounts({
+  //       admin: badAdmin,
+  //       adminState: badAdminState,
+  //       primaryAdmin: wallet.publicKey,
+  //       protocol: protocol,
+  //       systemProgram: SystemProgram.programId, //TYPE: PublicKey
+  //     })
+  //     .instruction()
 
-    const tx = new anchor.web3.Transaction().add(createAdminIx);
-    await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
-  });
+  //   const tx = new anchor.web3.Transaction().add(createAdminIx);
+  //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  // });
 
   // it("Create Collection", async () => {
   //   console.log('collection to string****', collection.toString())
@@ -388,13 +363,13 @@ describe("sol_factory", () => {
   //   const symbol = "TT6969";
   //   const sale_start_time = new anchor.BN(Date.now() * 1000); // 1 second from now
   //   const max_supply = new anchor.BN(100);
-  //   const price = new anchor.BN(10);
+  //   const price = 1.5;
   //   const whitelist_price = new anchor.BN(0);
   //   const stable_id = "TST2333232131";
   //   const reference = "TST4571";
-  //   const date_i64 = new anchor.BN(Date.now() * 1000); // 1 second from now
-  //   const date_plus_10_days = new anchor.BN(Date.now() * 1000 + 864000000);
-  //   const yesterday_date_i64 = new anchor.BN(Date.now() * 1000 - 86400000);
+  //   const date_i64 = new anchor.BN(Math.floor(Date.now()/1000))
+  //   const date_plus_10_days = new anchor.BN(Math.floor(Date.now()/1000) + 864000000);
+  //   const yesterday_date_i64 = new anchor.BN(Date.now() - 86400000);
     
   //   const url = "https://amin.stable-dilution.art/nft/item/generation/3/11/0xf75e77b4EfD56476708792066753AC428eB0c21c";
 
@@ -492,6 +467,7 @@ describe("sol_factory", () => {
     console.log('FEE PAYER SOL BALANCE TO START: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
     console.log('BUYER SOL BALANCE TO START: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
     console.log('COLLECTION WALLET SOL BALANCE TO START: ', ((await connection.getBalance(collection_wallet.publicKey)) / LAMPORTS_PER_SOL));
+    console.log('buyerPlaceholderAta to string', buyerPlaceholderAta.toString())
     const transaction = new Transaction().add(
       await program.methods
       .buyPlaceholder()
@@ -943,4 +919,3 @@ describe("sol_factory", () => {
 //         console.log(`Transaction ID 2: ${txId2}`);
 
 //   })  
-// });

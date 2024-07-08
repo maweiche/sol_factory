@@ -32,7 +32,7 @@ pub struct Collection {
     pub sale_end_time: i64,
     pub max_supply: u64,
     pub total_supply: u64,
-    pub price: u64,
+    pub price: f32,
     pub stable_id: String,
 }
 
@@ -46,7 +46,7 @@ pub struct Placeholder {
     pub collection: Pubkey,
     pub reference: String,
     pub name: String,
-    pub price: u64,
+    pub price: f32,
     pub time_stamp: i64,
 }
 
@@ -65,7 +65,7 @@ pub struct AiNft {
     pub id: u64,
     pub collection: Pubkey,
     pub reference: String,
-    pub price: u64,
+    pub price: f32,
     pub time_stamp: i64,
 }
 

@@ -5,7 +5,7 @@ mod constant;
 mod context;
 use context::*;
 
-declare_id!("3W8Yph6SuCtJjWd2gHHsgy8UJ5FBYTiJBefd3n8oAqKG");
+declare_id!("8yhDYopWezMx7XQuHgS8JaqkGtqj7cTUw1CUQqPt39bU");
 
 #[program]
 pub mod sol_factory {
@@ -37,7 +37,7 @@ pub mod sol_factory {
         sale_start_time: i64, 
         sale_end_time: i64,
         max_supply: u64, 
-        price: u64, 
+        price: f32, 
         stable_id: String, 
     ) -> Result<()> {
         ctx.accounts.create(reference, name, symbol, url, sale_start_time, sale_end_time, max_supply, price, stable_id)

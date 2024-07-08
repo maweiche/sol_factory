@@ -1,4 +1,3 @@
-use solana_program::native_token::LAMPORTS_PER_SOL;
 use {
     anchor_lang::prelude::*,
     anchor_spl::{
@@ -21,7 +20,10 @@ use std::str::FromStr;
 use crate::{
     state::{Placeholder, Collection, Protocol}, 
     errors::{BuyingError, ProtocolError},
-    constant::ED25519_PROGRAM_ID
+    constant::{
+        ED25519_PROGRAM_ID, 
+        ADMIN_FEE
+    },
 };
 
 #[derive(Accounts)]
@@ -122,15 +124,11 @@ impl<'info> AirdropPlaceholder<'info> {
             self.collection.max_supply > self.collection.total_supply,
             BuyingError::SoldOut
         );
-
-        // The 2nd transfer instruction is the fee for the mint since the admin wallet is the payer of second mint
-        // current cost to mint placeholder + nft + burn placeholder = ~0.02 - 0.03 SOL
-        let admin_fee = 0.075;
-        let admin_fee_in_lamports = admin_fee as u64 * LAMPORTS_PER_SOL;
+        
         let transfer_instruction_two = system_instruction::transfer(
             &self.collection_owner.key(),
             &self.payer.key(),
-            admin_fee_in_lamports,
+            ADMIN_FEE,
         );
 
          // Instruction Check

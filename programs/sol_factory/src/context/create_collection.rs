@@ -11,7 +11,7 @@ use crate::errors::ProtocolError;
     sale_start_time: i64,
     sale_end_time: i64,
     max_supply: u64,
-    price: u64,
+    price: f32,
     stable_id: String,
 )]
 pub struct CreateCollection<'info> {
@@ -50,7 +50,7 @@ impl<'info> CreateCollection<'info> {
         sale_start_time: i64,
         sale_end_time: i64,
         max_supply: u64,
-        price: u64,
+        price: f32,
         stable_id: String,
     ) -> Result<()> {
 
@@ -67,6 +67,20 @@ impl<'info> CreateCollection<'info> {
 
         require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
         require!(self.admin_state.publickey == *self.admin.key, ProtocolError::UnauthorizedAdmin);
+
+        // sanity check
+
+        require!(sale_start_time < sale_end_time, ProtocolError::InvalidSaleTime);
+        require!(sale_start_time > 0, ProtocolError::InvalidSaleTime);
+        require!(sale_end_time > 0, ProtocolError::InvalidSaleTime);
+        require!(max_supply > 0, ProtocolError::InvalidMaxSupply);
+        require!(price >= 0.0, ProtocolError::InvalidPrice);
+
+        
+        // msg!("Sale start time is {}", sale_start_time);
+        // msg!("Sale end time is {}", sale_end_time);
+        // msg!("Current time is {}", Clock::get()?.unix_timestamp);
+
 
         self.collection.set_inner(
             Collection {
