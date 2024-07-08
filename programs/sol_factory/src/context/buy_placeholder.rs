@@ -2,13 +2,20 @@ use solana_program::native_token::LAMPORTS_PER_SOL;
 use {
     anchor_lang::prelude::*,
     anchor_spl::{
-        token_2022::{Token2022, spl_token_2022::instruction::AuthorityType},
+        token_2022::{
+            Token2022, 
+            spl_token_2022::{
+                instruction::AuthorityType,
+                state::Account as TokenAccount,
+                extension::StateWithExtensions,
+            }},
         associated_token::{AssociatedToken, Create, create},
         token::Token,  
-        token_interface::{MintTo, mint_to, set_authority, SetAuthority}
+        token_interface::{MintTo, mint_to, set_authority, SetAuthority},
     },
     solana_program::{system_instruction, program::invoke},
 };
+
 use crate::{
     constant::{ADMIN_FEE, ADMIN_PERCENTAGE}, errors::{BuyingError, ProtocolError}, state::{Collection, Placeholder, Protocol}
 };
@@ -163,7 +170,16 @@ impl<'info> BuyPlaceholder<'info> {
                 }
             ),
         )?;
+
+        // balance before minting
+        {
+            let _before_data = self.buyer_mint_ata.data.borrow();
+            let _before_state = StateWithExtensions::<TokenAccount>::unpack(&_before_data)?;
         
+            msg!("before mint balance={}", _before_state.base.amount);
+        }
+        
+
         // Mint the mint
         mint_to(
             CpiContext::new_with_signer(
@@ -180,7 +196,6 @@ impl<'info> BuyPlaceholder<'info> {
 
         self.collection.total_supply += 1;
 
-        // verify self.collection.total_supply has increased
 
 
         msg!("Total supply: {}", self.collection.total_supply);
@@ -197,6 +212,16 @@ impl<'info> BuyPlaceholder<'info> {
             AuthorityType::MintTokens, 
             None
         )?;
+
+        // check the post balance of the mint
+        {
+            let _after_data = self.buyer_mint_ata.data.borrow();
+            let _after_state = StateWithExtensions::<TokenAccount>::unpack(&_after_data)?;
+
+            msg!("after mint balance={}", _after_state.base.amount);
+
+            require!(_after_state.base.amount == 1, ProtocolError::InvalidBalancePostMint);
+        }
 
         Ok(())
     }

@@ -5,7 +5,7 @@ seeds = false
 skip-lint = false
 
 [programs.devnet]
-sol_factory = "8yhDYopWezMx7XQuHgS8JaqkGtqj7cTUw1CUQqPt39bU"
+sol_factory = "7dq2RGEWAtpt3GjmmkwCzZyWZC7Lpho1YZ7PxenxvLSw"
 
 [programs.localnet]
 sol_factory = "9agam7Nbvx8rbZDAjsnoFbtTBVf1MUepUJ2q76uFXsP7"

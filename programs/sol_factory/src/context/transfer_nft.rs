@@ -4,7 +4,13 @@ use {
         solana_program::program::invoke_signed
     },
     anchor_spl::{
-        token_2022::{Token2022, spl_token_2022::instruction::AuthorityType},
+        token_2022::{
+            Token2022, 
+            spl_token_2022::{
+                instruction::AuthorityType,
+                state::Account as TokenAccount,
+                extension::StateWithExtensions,
+            }},
         associated_token::{AssociatedToken, Create, create},  
         token::Token,
         token_interface::{MintTo, mint_to, set_authority, SetAuthority}
@@ -137,7 +143,19 @@ impl<'info> TransferNft<'info> {
             ),
             )?;
         }
-    
+        
+        // balance before minting
+        let _before_data = self.buyer_mint_ata.data.borrow();
+        let _before_state = StateWithExtensions::<TokenAccount>::unpack(&_before_data)?;
+        
+        msg!("before mint balance={}", _before_state.base.amount);
+
+        require!(
+            _before_state.base.amount == 0,
+            ProtocolError::InvalidBalancePreMint
+        );
+
+        
 
         // Mint the mint
         mint_to(
@@ -166,6 +184,23 @@ impl<'info> TransferNft<'info> {
             None
         )?;
 
+        // balance after minting, reload the data
+        // let _after_data = self.buyer_mint_ata.data.borrow();
+        // let _after_state = StateWithExtensions::<TokenAccount>::unpack(&_after_data)?;
+
+        // msg!("after mint balance={}", _after_state.base.amount);
+
+    //     require!(_after_state.base.amount == 1, ProtocolError::InvalidBalancePostMint);
+
+    //     let _before_burn_data = self.buyer_placeholder_mint_ata.data.borrow();
+    //     let _before_burn_state = StateWithExtensions::<TokenAccount>::unpack(&_before_burn_data)?;
+
+    //     // Always check if you got the correct ATA for the burn
+    //    require!(_before_burn_state.base.amount == 0, ProtocolError::InvalidBalancePreBurn);
+
+    //     msg!("before burn balance={}", _before_burn_state.base.amount);
+
+
         // Burn the placeholder nft
         let ix = burn(
             &self.token_2022_program.key,
@@ -188,6 +223,15 @@ impl<'info> TransferNft<'info> {
             ],
             &[&seeds[..]],
         )?;
+
+        // check the post balance of the burn
+
+        // let _after_burn_data = self.buyer_placeholder_mint_ata.data.borrow();   
+        // let _after_burn_state = StateWithExtensions::<TokenAccount>::unpack(&_after_burn_data)?;
+
+        // msg!("after burn balance={}", _after_burn_state.base.amount);
+
+        // require!(_after_burn_state.base.amount == 0, ProtocolError::InvalidBalancePostBurn);
 
 
         Ok(())

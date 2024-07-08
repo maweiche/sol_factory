@@ -5,7 +5,7 @@ mod constant;
 mod context;
 use context::*;
 
-declare_id!("8yhDYopWezMx7XQuHgS8JaqkGtqj7cTUw1CUQqPt39bU");
+declare_id!("7dq2RGEWAtpt3GjmmkwCzZyWZC7Lpho1YZ7PxenxvLSw");
 
 #[program]
 pub mod sol_factory {

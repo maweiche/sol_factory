@@ -501,3 +501,14 @@ done -- do it for AiNFT too??
 - check lamports/check balances after any cpi's
 --- ln 148/182 check token balance before and after mint
 --- transfer_nft check balancepost burn
+
+
+
+
+
+
+
+<!-- fix checks pre/post mint-->
+<!-- use a counter on the nf? -->
+<!-- sanitize collection url -->
+<!-- create fn for fetching dynamic image url -->

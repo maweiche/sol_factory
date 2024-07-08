@@ -18,6 +18,8 @@ pub enum BuyingError {
     NotInWhitelist,
     #[msg("The airdrop buyer does not match input")]
     WalletDoesNotMatch,
+    #[msg("Token account doesn't match the expected mint")]
+    TokenAccountMismatch,
 }
 #[error_code]
 pub enum ProtocolError {
