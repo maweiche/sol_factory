@@ -53,6 +53,7 @@ pub struct TransferNft<'info> {
     /// CHECK
     pub mint: UncheckedAccount<'info>,
     #[account(
+        mut,
         seeds = [b"collection", collection.owner.key().as_ref()],
         bump,
     )] 
@@ -195,12 +196,13 @@ impl<'info> TransferNft<'info> {
             require!(_after_state.base.amount == 1, ProtocolError::InvalidBalancePostMint);
         }
 
+        self.collection.mint_count += 1; 
+
         {
             let _before_burn_data = self.buyer_placeholder_mint_ata.data.borrow();
             let _before_burn_state = StateWithExtensions::<TokenAccount>::unpack(&_before_burn_data)?;
 
-            // Always check if you got the correct ATA for the burn
-            require!(_before_burn_state.base.amount == 0, ProtocolError::InvalidBalancePreBurn);
+            require!(_before_burn_state.base.amount > 0, ProtocolError::InvalidBalancePreBurn);
 
             msg!("before burn balance={}", _before_burn_state.base.amount);
         }

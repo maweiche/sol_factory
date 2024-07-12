@@ -17,7 +17,11 @@ use {
 };
 
 use crate::{
-    constant::{ADMIN_FEE, ADMIN_PERCENTAGE}, errors::{BuyingError, ProtocolError}, state::{Collection, Placeholder, Protocol}
+    constant::{
+        ADMIN_FEE, 
+        // ADMIN_PERCENTAGE
+    }, 
+    errors::{BuyingError, ProtocolError}, state::{Collection, Placeholder, Protocol}
 };
 
 #[derive(Accounts)]
@@ -122,19 +126,19 @@ impl<'info> BuyPlaceholder<'info> {
         
 
         // Pay the mint
-        let amount_in_lamports = self.placeholder.price * LAMPORTS_PER_SOL as f32;
+        let amount_in_lamports = ((self.placeholder.price * LAMPORTS_PER_SOL as f32) as u64) - ADMIN_FEE;  //// ex. should be (0.3 * 1000000000) - 100000000 = 200000000
         let transfer_instruction = system_instruction::transfer(
             &self.buyer.key(),
             &self.collection_owner.key(),
             amount_in_lamports as u64,
-        );
+        );  
 
-        let _admin_fee = ((self.placeholder.price * ADMIN_PERCENTAGE) * LAMPORTS_PER_SOL as f32) + ADMIN_FEE as f32;
+        // let _admin_fee = ((self.placeholder.price * ADMIN_PERCENTAGE) * LAMPORTS_PER_SOL as f32) + ADMIN_FEE as f32;
 
         let transfer_instruction_two = system_instruction::transfer(
             &self.buyer.key(),
             &self.payer.key(),
-            _admin_fee as u64,
+            ADMIN_FEE as u64,
         );
 
         

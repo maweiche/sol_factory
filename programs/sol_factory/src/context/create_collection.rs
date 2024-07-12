@@ -17,8 +17,9 @@ use crate::errors::ProtocolError;
 pub struct CreateCollection<'info> {
     #[account(mut)]
     pub admin: Signer<'info>,
+    /// CHECK: this is ok because admin is setting up on owner behalf
     #[account(mut)]
-    pub owner: Signer<'info>,
+    pub owner: AccountInfo<'info>,
     #[account(
         init,
         seeds = [b"collection", owner.key().as_ref()],
@@ -93,6 +94,7 @@ impl<'info> CreateCollection<'info> {
                 sale_end_time,
                 max_supply,
                 total_supply: 0,
+                mint_count: 0,
                 price,
                 stable_id,
             }
@@ -100,6 +102,7 @@ impl<'info> CreateCollection<'info> {
 
         Ok(())
     }
+
 }
 
 // add_sale_start_time

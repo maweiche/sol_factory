@@ -32,12 +32,13 @@ pub struct Collection {
     pub sale_end_time: i64,
     pub max_supply: u64,
     pub total_supply: u64,
+    pub mint_count: u64,
     pub price: f32,
     pub stable_id: String,
 }
 
 impl Space for Collection {
-    const INIT_SPACE: usize = 8 + 32 + 4 + 4 + 32 + 4 + 8 + 8 + 8 + 8 + 4 + 4 + 8 + 8; 
+    const INIT_SPACE: usize = 8 + 32 + 4 + 4 + 32 + 4 + 8 + 8 + 8 + 8 + 8 + 4 + 4 + 8 + 8; 
 }
 
 #[account]

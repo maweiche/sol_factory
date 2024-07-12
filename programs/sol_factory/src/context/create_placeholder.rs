@@ -87,7 +87,7 @@ impl<'info> CreatePlaceholder<'info> {
         require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
         require!(self.admin_state.publickey == *self.admin.key, ProtocolError::UnauthorizedAdmin);
         
-        if self.collection.total_supply >= self.collection.max_supply {
+        if self.collection.total_supply > self.collection.max_supply{
             return Err(BuyingError::SoldOut.into());
         }
 
@@ -110,7 +110,7 @@ impl<'info> CreatePlaceholder<'info> {
                 ExtensionType::MetadataPointer,
             ],
         ).unwrap();
-
+        let _count = self.collection.total_supply + 1;
         let metadata = TokenMetadata {
             update_authority: spl_pod::optional_keys::OptionalNonZeroPubkey::try_from(Some(self.auth.key())).unwrap(),
             mint: self.mint.key(),
@@ -118,10 +118,12 @@ impl<'info> CreatePlaceholder<'info> {
             symbol: self.collection.symbol.clone(),
             uri,
             additional_metadata: vec![
+                ("id".to_string(), id.to_string()),
+                ("count".to_string(), _count.to_string()),
                 ("timestamp".to_string(), Clock::get()?.unix_timestamp.to_string()),
                 ("price".to_string(), self.collection.price.to_string()),
                 ("collection".to_string(), self.collection.name.to_string()),
-                ("reference".to_string(), self.collection.reference.to_string())
+                ("collection key".to_string(), self.collection.key().to_string())
             ]
         };
 

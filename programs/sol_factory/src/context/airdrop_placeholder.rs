@@ -13,8 +13,8 @@ use {
         token_interface::{MintTo, mint_to, set_authority, SetAuthority}
     },
     solana_program::{
-        system_instruction, 
-        program::invoke,
+        // system_instruction, 
+        // program::invoke,
         sysvar::instructions::{
             self,
             load_current_index_checked,
@@ -24,12 +24,10 @@ use {
 };
 use std::str::FromStr;
 use crate::{
-    state::{Placeholder, Collection, Protocol}, 
-    errors::{BuyingError, ProtocolError},
     constant::{
-        ED25519_PROGRAM_ID, 
-        ADMIN_FEE
-    },
+        self, ED25519_PROGRAM_ID
+        // ADMIN_FEE
+    }, errors::{BuyingError, ProtocolError}, state::{Collection, Placeholder, Protocol}
 };
 
 #[derive(Accounts)]
@@ -43,7 +41,7 @@ pub struct AirdropPlaceholder<'info> {
     pub collection: Account<'info, Collection>,
     /// CHECK
     #[account(mut)]
-    pub collection_owner: Signer<'info>,
+    pub collection_owner: AccountInfo<'info>,
     #[account(
         mut,
         seeds = [
@@ -114,6 +112,7 @@ impl<'info> AirdropPlaceholder<'info> {
         */
 
         require!(!self.protocol.locked, ProtocolError::ProtocolLocked);
+        require!(self.payer.key() == constant::admin_wallet::id(), ProtocolError::UnauthorizedAdmin);
 
         let seeds: &[&[u8]; 2] = &[
             b"auth",
@@ -121,21 +120,17 @@ impl<'info> AirdropPlaceholder<'info> {
         ];
         let signer_seeds = &[&seeds[..]];
     
-        require!(
-            self.collection.sale_start_time > Clock::get()?.unix_timestamp,
-            BuyingError::NotTimeYet
-        );
 
         require!(
             self.collection.max_supply > self.collection.total_supply,
             BuyingError::SoldOut
         );
         
-        let transfer_instruction_two = system_instruction::transfer(
-            &self.collection_owner.key(),
-            &self.payer.key(),
-            ADMIN_FEE,
-        );
+        // let transfer_instruction_two = system_instruction::transfer(
+        //     &self.collection_owner.key(),
+        //     &self.payer.key(),
+        //     ADMIN_FEE,
+        // );
 
          // Instruction Check
          let ixs = self.instructions.to_account_info();
@@ -148,7 +143,7 @@ impl<'info> AirdropPlaceholder<'info> {
                     if Pubkey::from_str(ED25519_PROGRAM_ID).unwrap() == signature_ix.program_id {
                          // Ensure signing authority is correct
                        require!(
-                         self.collection_owner.key
+                        constant::admin_wallet::id()
                              .to_bytes()
                              .eq(&signature_ix.data[16..48]),
                          ProtocolError::UnauthorizedAdmin,
@@ -163,14 +158,14 @@ impl<'info> AirdropPlaceholder<'info> {
                          ProtocolError::UnauthorizedAdmin,
                        );
 
-                       invoke(
-                        &transfer_instruction_two,
-                        &[
-                            self.collection_owner.to_account_info(),
-                            self.payer.to_account_info(),
-                            self.system_program.to_account_info(),
-                        ],
-                        )?;
+                    //    invoke(
+                    //     &transfer_instruction_two,
+                    //     &[
+                    //         self.collection_owner.to_account_info(),
+                    //         self.payer.to_account_info(),
+                    //         self.system_program.to_account_info(),
+                    //     ],
+                    //     )?;
             
                         // Initialize ATA
                         create(

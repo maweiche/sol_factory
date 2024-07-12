@@ -35,6 +35,8 @@ pub enum ProtocolError {
     InvalidMaxSupply,
     #[msg("Invalid Price")]
     InvalidPrice,
+    #[msg("Mint Count did not increment")]
+    InvalidMintCount,
     #[msg("Invalid Balance of Token Pre Mint")]
     InvalidBalancePreMint,
     #[msg("Invalid Balance of Token Post Mint")]
