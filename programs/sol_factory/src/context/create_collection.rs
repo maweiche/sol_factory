@@ -24,7 +24,7 @@ pub struct CreateCollection<'info> {
         init,
         seeds = [b"collection", owner.key().as_ref()],
         bump,
-        payer = owner,
+        payer = admin,
         space = Collection::INIT_SPACE + 54 + url.len() + name.len() + stable_id.len(),
     )] 
     pub collection: Account<'info, Collection>,

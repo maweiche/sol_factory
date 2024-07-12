@@ -38,7 +38,7 @@ describe("sol_factory", () => {
   console.log('buyer', buyer.publicKey.toBase58());
 
   // const collection_keypair = require('../test-wallet/keypair3.json')
-  const collection_keypair = require('../test-wallet/keypair2.json')
+  const collection_keypair = require('../test-wallet/keypair3.json')
 
   const collection_wallet = Keypair.fromSecretKey(Uint8Array.from(collection_keypair))
   console.log('collection_wallet', collection_wallet.publicKey.toBase58()); 
@@ -74,8 +74,8 @@ describe("sol_factory", () => {
 
   const protocol = PublicKey.findProgramAddressSync([Buffer.from('protocol')], program.programId)[0];
 
-  
-  const collection = PublicKey.findProgramAddressSync([Buffer.from('collection'), collection_wallet.publicKey.toBuffer()], program.programId)[0];
+  const stephan_publickey = new PublicKey('H21y6LmZkGmBU9k6YzCRB1MpSnMoXHVtiuCxtTqS87w9');
+  const collection = PublicKey.findProgramAddressSync([Buffer.from('collection'), stephan_publickey.toBuffer()], program.programId)[0];
 
   //  console.log('all_program_accounts', all_program_accounts)
   const id = Math.floor(Math.random() * 100000);
@@ -506,60 +506,60 @@ describe("sol_factory", () => {
   //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
   // });
 
-  // it("Create Collection", async () => {
-  //   console.log('collection to string****', collection.toString())
-  //   console.log('placeholder to string', placeholder.toString())
-  //   console.log('placeholder mint to string', placeholder_mint.toString())
-  //   console.log('nft to string', nft.toString())
-  //   console.log('auth to string', auth.toString())
-  //   console.log('adminState to string', adminState.toString())
-  //   console.log('buyerPlaceholderAta to string', buyerPlaceholderAta.toString())
-  //   const name = "Foo Collection";
-  //   const symbol = "FOO";
-  //   const max_supply = new anchor.BN(100);
-  //   const price = 0.3;
-  //   const stable_id = "FOO2131";
-  //   const date_i64 = new anchor.BN(Math.floor(Date.now()/1000))
-  //   const date_plus_10_days = new anchor.BN(Math.floor(Date.now()/1000) + 864000000);
+  it("Create Collection", async () => {
+    console.log('collection to string****', collection.toString())
+    console.log('placeholder to string', placeholder.toString())
+    console.log('placeholder mint to string', placeholder_mint.toString())
+    console.log('nft to string', nft.toString())
+    console.log('auth to string', auth.toString())
+    console.log('adminState to string', adminState.toString())
+    console.log('buyerPlaceholderAta to string', buyerPlaceholderAta.toString())
+    const name = "Stephan Collection";
+    const symbol = "STP";
+    const max_supply = new anchor.BN(100);
+    const price = 0.3;
+    const stable_id = "STP2131";
+    const date_i64 = new anchor.BN(Math.floor(Date.now()/1000))
+    const date_plus_10_days = new anchor.BN(Math.floor(Date.now()/1000) + 864000000);
     
-  //   const url = "https://amin.stable-dilution.art/nft/item/generation/3";
+    const url = "https://stephan.stable-dilution.art/nft/item/generation/1";
 
-  // // / fix 'https://amin.stable-dilution.art/nft/item/generation/3/'
+  // / fix 'https://amin.stable-dilution.art/nft/item/generation/3/'
 
-  //   try{
+    try{
 
-  //     const createCollectionIx = await program.methods
-  //       .createCollection(
-  //         collectionRefKey,
-  //         name,
-  //         symbol,
-  //         url,
-  //         date_i64,
-  //         date_plus_10_days,
-  //         max_supply,
-  //         price,
-  //         stable_id,
-  //       )
-  //       .accounts({
-  //         admin: wallet.publicKey,
-  //         owner: collection_wallet.publicKey,
-  //         collection: collection,
-  //         adminState,
-  //         protocol: protocol,
-  //         systemProgram: SystemProgram.programId,
-  //       })
-  //       .instruction()
+      const createCollectionIx = await program.methods
+        .createCollection(
+          collectionRefKey,
+          name,
+          symbol,
+          url,
+          date_i64,
+          date_plus_10_days,
+          max_supply,
+          price,
+          stable_id,
+        )
+        .accounts({
+          admin: wallet.publicKey,
+          owner: stephan_publickey,
+          collection: collection,
+          adminState,
+          protocol: protocol,
+          systemProgram: SystemProgram.programId,
+        })
+        .instruction()
 
-  //     const tx = new anchor.web3.Transaction().add(createCollectionIx);
-  //     // tx.partialSign(collection_wallet);
-  //     // console.log('tx partial sign', tx)
-  //     await sendAndConfirmTransaction(connection, tx, [wallet.payer, collection_wallet], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+      const tx = new anchor.web3.Transaction().add(createCollectionIx);
+      // tx.partialSign(collection_wallet);
+      // console.log('tx partial sign', tx)
+      await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
 
-  //     // getAllCollections();
-  //   } catch (error) {
-  //     console.log('error', error)
-  //   }
-  // });
+      // getAllCollections();
+    } catch (error) {
+      console.log('error', error)
+    }
+  });
 
   // it("Create Placeholder", async () => {
   //   const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
@@ -917,191 +917,191 @@ describe("sol_factory", () => {
   //       console.log('BUYER SOL BALANCE AFTER SINGLE TXN: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
   // })  
 
-  it("Should Complete everything in one txn as an Airdrop", async () => {
-    const LOOKUP_TABLE_ADDRESS = new PublicKey('HHDVCeTGwWHMqWNBqCxzWCPqfjcV7Gmji7bZsVjGpNjA');
-    const lookupTable = (await connection.getAddressLookupTable(LOOKUP_TABLE_ADDRESS)).value;
-    console.log('FEE PAYER SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
-    console.log('BUYER SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
-    console.log('COLLECTION WALLET SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(collection_wallet.publicKey)) / LAMPORTS_PER_SOL));
+  // it("Should Complete everything in one txn as an Airdrop", async () => {
+  //   const LOOKUP_TABLE_ADDRESS = new PublicKey('HHDVCeTGwWHMqWNBqCxzWCPqfjcV7Gmji7bZsVjGpNjA');
+  //   const lookupTable = (await connection.getAddressLookupTable(LOOKUP_TABLE_ADDRESS)).value;
+  //   console.log('FEE PAYER SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+  //   console.log('BUYER SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
+  //   console.log('COLLECTION WALLET SOL BALANCE TO START SINGLE TXN: ', ((await connection.getBalance(collection_wallet.publicKey)) / LAMPORTS_PER_SOL));
 
-    // airdrop placeholder to buyer
-    const ed25519Ix = Ed25519Program.createInstructionWithPrivateKey({
-      privateKey: buyer.secretKey,
-      message: buyer.publicKey.toBuffer(),
-    });
-    // console.log('ed25519Ix', ed25519Ix)
-    const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 600_000 });
-    const createPlaceholderIx = await program.methods
-      .createPlaceholder(
-        new anchor.BN(id),
-        "https://arweave.net/-mpn67FnEePrsoKez4f6Dvjb1aMcH1CqCdZX0NCyHK8",
-      )
-      .accounts({
-        admin: wallet.publicKey,
-        adminState,   
-        collection: collection,
-        placeholder: placeholder,
-        mint: placeholder_mint,
-        auth,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-        token2022Program: TOKEN_2022_PROGRAM_ID,
-        protocol: protocol,
-        systemProgram: SystemProgram.programId,
-      })  
-      .instruction()
+  //   // airdrop placeholder to buyer
+  //   const ed25519Ix = Ed25519Program.createInstructionWithPrivateKey({
+  //     privateKey: buyer.secretKey,
+  //     message: buyer.publicKey.toBuffer(),
+  //   });
+  //   // console.log('ed25519Ix', ed25519Ix)
+  //   const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 600_000 });
+  //   const createPlaceholderIx = await program.methods
+  //     .createPlaceholder(
+  //       new anchor.BN(id),
+  //       "https://arweave.net/-mpn67FnEePrsoKez4f6Dvjb1aMcH1CqCdZX0NCyHK8",
+  //     )
+  //     .accounts({
+  //       admin: wallet.publicKey,
+  //       adminState,   
+  //       collection: collection,
+  //       placeholder: placeholder,
+  //       mint: placeholder_mint,
+  //       auth,
+  //       rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+  //       token2022Program: TOKEN_2022_PROGRAM_ID,
+  //       protocol: protocol,
+  //       systemProgram: SystemProgram.programId,
+  //     })  
+  //     .instruction()
     
-    const buyPlaceholderIx = await program.methods
-      .airdropPlaceholder()
-      .accounts({
-        payer: buyer.publicKey,
-        buyer: buyer.publicKey,
-        collection: collection,
-        collectionOwner: collection_wallet.publicKey,
-        buyerMintAta: buyerPlaceholderAta,
-        placeholder: placeholder,
-        mint: placeholder_mint,
-        auth: auth, //lookupTable.state.addresses[2],
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        token2022Program: TOKEN_2022_PROGRAM_ID,
-        protocol: protocol, //lookupTable.state.addresses[1],
-        systemProgram: SystemProgram.programId,
-        instructions: SYSVAR_INSTRUCTIONS_PUBKEY,
-      })
-      .instruction()
+  //   const buyPlaceholderIx = await program.methods
+  //     .airdropPlaceholder()
+  //     .accounts({
+  //       payer: buyer.publicKey,
+  //       buyer: buyer.publicKey,
+  //       collection: collection,
+  //       collectionOwner: collection_wallet.publicKey,
+  //       buyerMintAta: buyerPlaceholderAta,
+  //       placeholder: placeholder,
+  //       mint: placeholder_mint,
+  //       auth: auth, //lookupTable.state.addresses[2],
+  //       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+  //       tokenProgram: TOKEN_PROGRAM_ID,
+  //       token2022Program: TOKEN_2022_PROGRAM_ID,
+  //       protocol: protocol, //lookupTable.state.addresses[1],
+  //       systemProgram: SystemProgram.programId,
+  //       instructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+  //     })
+  //     .instruction()
     
-      // // ADD IN THE FETCH OF THE URL FROM THE DECODED COLLECTION DATA
-      // const {url, count} = await getCollectionUrl(collection);
+  //     // // ADD IN THE FETCH OF THE URL FROM THE DECODED COLLECTION DATA
+  //     // const {url, count} = await getCollectionUrl(collection);
 
-      // const nft_data = await fetch(`${url}/${count}/${buyer.publicKey.toBase58()}`, {
-      //   headers: {
-      //     "x-authorization" : "Bearer "
-      //   }
-      // })
+  //     // const nft_data = await fetch(`${url}/${count}/${buyer.publicKey.toBase58()}`, {
+  //     //   headers: {
+  //     //     "x-authorization" : "Bearer "
+  //     //   }
+  //     // })
 
-      // const metadata_json: any = await nft_data.json(); 
+  //     // const metadata_json: any = await nft_data.json(); 
 
-      // const attributes = metadata_json.attributes.map((attr: any) => {
-      //   return {key: attr.trait_type, value: attr.value}
-      // })
+  //     // const attributes = metadata_json.attributes.map((attr: any) => {
+  //     //   return {key: attr.trait_type, value: attr.value}
+  //     // })
 
-      // const areweave_metadata: any = await fetch(metadata_json.metadataUrl)
-      // const areweave_json = await areweave_metadata.json()
+  //     // const areweave_metadata: any = await fetch(metadata_json.metadataUrl)
+  //     // const areweave_json = await areweave_metadata.json()
 
-      // const nft_name = areweave_json.name;
+  //     // const nft_name = areweave_json.name;
 
-      // const createNftIx = await program.methods
-      //   .createNft(
-      //     new anchor.BN(id),
-      //     metadata_json.metadataUrl,
-      //     nft_name,
-      //     attributes,
-      //   )
-      //   .accounts({
-      //     admin: wallet.publicKey,
-      //     adminState: adminState, //lookupTable.state.addresses[3],   
-      //     collection: collection,
-      //     nft: nft,
-      //     mint: nft_mint,
-      //     auth: auth, //lookupTable.state.addresses[2],
-      //     rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      //     token2022Program: TOKEN_2022_PROGRAM_ID,
-      //     protocol: protocol, //lookupTable.state.addresses[1],
-      //     systemProgram: SystemProgram.programId,
-      //   })
-      //   .instruction()
+  //     // const createNftIx = await program.methods
+  //     //   .createNft(
+  //     //     new anchor.BN(id),
+  //     //     metadata_json.metadataUrl,
+  //     //     nft_name,
+  //     //     attributes,
+  //     //   )
+  //     //   .accounts({
+  //     //     admin: wallet.publicKey,
+  //     //     adminState: adminState, //lookupTable.state.addresses[3],   
+  //     //     collection: collection,
+  //     //     nft: nft,
+  //     //     mint: nft_mint,
+  //     //     auth: auth, //lookupTable.state.addresses[2],
+  //     //     rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+  //     //     token2022Program: TOKEN_2022_PROGRAM_ID,
+  //     //     protocol: protocol, //lookupTable.state.addresses[1],
+  //     //     systemProgram: SystemProgram.programId,
+  //     //   })
+  //     //   .instruction()
 
-      //   const transferNftIx = await program.methods
-      //     .transferNft()
-      //     .accounts({
-      //       payer: wallet.publicKey,
-      //       buyer: buyer.publicKey,
-      //       buyerMintAta: buyerNftAta,
-      //       nft: nft,
-      //       mint: nft_mint,
-      //       collection: collection,
-      //       auth: auth, //lookupTable.state.addresses[2],
-      //       buyerPlaceholderMintAta: buyerPlaceholderAta,
-      //       placeholder: placeholder,
-      //       placeholderMint: placeholder_mint,
-      //       placeholderMintAuthority: wallet.publicKey,
-      //       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-      //       tokenProgram: TOKEN_PROGRAM_ID,
-      //       token2022Program: TOKEN_2022_PROGRAM_ID,
-      //       protocol: protocol, //lookupTable.state.addresses[1],
-      //       systemProgram: SystemProgram.programId,
-      //     })
-      //     .instruction()
+  //     //   const transferNftIx = await program.methods
+  //     //     .transferNft()
+  //     //     .accounts({
+  //     //       payer: wallet.publicKey,
+  //     //       buyer: buyer.publicKey,
+  //     //       buyerMintAta: buyerNftAta,
+  //     //       nft: nft,
+  //     //       mint: nft_mint,
+  //     //       collection: collection,
+  //     //       auth: auth, //lookupTable.state.addresses[2],
+  //     //       buyerPlaceholderMintAta: buyerPlaceholderAta,
+  //     //       placeholder: placeholder,
+  //     //       placeholderMint: placeholder_mint,
+  //     //       placeholderMintAuthority: wallet.publicKey,
+  //     //       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+  //     //       tokenProgram: TOKEN_PROGRAM_ID,
+  //     //       token2022Program: TOKEN_2022_PROGRAM_ID,
+  //     //       protocol: protocol, //lookupTable.state.addresses[1],
+  //     //       systemProgram: SystemProgram.programId,
+  //     //     })
+  //     //     .instruction()
 
-          const instructions: TransactionInstruction[] = [
-            modifyComputeUnitIx,
-            createPlaceholderIx,
-            ed25519Ix,
-            buyPlaceholderIx,
-          ];
-        const blockhash = await connection
-          .getLatestBlockhash({ commitment: 'max' })
-          .then((res) => res.blockhash);
-        const messageV0 = new TransactionMessage({
-          payerKey: wallet.publicKey,
-          recentBlockhash: blockhash,
-          instructions
-        }).compileToV0Message();
-        const txn = new VersionedTransaction(messageV0);
+  //         const instructions: TransactionInstruction[] = [
+  //           modifyComputeUnitIx,
+  //           createPlaceholderIx,
+  //           ed25519Ix,
+  //           buyPlaceholderIx,
+  //         ];
+  //       const blockhash = await connection
+  //         .getLatestBlockhash({ commitment: 'max' })
+  //         .then((res) => res.blockhash);
+  //       const messageV0 = new TransactionMessage({
+  //         payerKey: wallet.publicKey,
+  //         recentBlockhash: blockhash,
+  //         instructions
+  //       }).compileToV0Message();
+  //       const txn = new VersionedTransaction(messageV0);
 
-        const size_of_txn = txn.serialize().length;
-        console.log('size_of_txn', size_of_txn)
-
-
-        txn.sign([wallet.payer]);
-        txn.sign([buyer]);
-
-        const txId = await connection.sendTransaction(
-          txn, {
-            skipPreflight: true
-          }
-        );
-
-        console.log(`Transaction ID: ${txId}`);
-
-        const _confirm = await confirm(txId);
-        console.log('confirm', _confirm);
-        console.log('BUYER SOL BALANCE AFTER SINGLE TXN: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
-      // const instructions2: TransactionInstruction[] = [
-      //   createNftIx,
-      //   transferNftIx
-      // ];
-
-      // const blockhash2 = await connection
-      //     .getLatestBlockhash({ commitment: 'max' })
-      //     .then((res) => res.blockhash);
-      //   const messageV02 = new TransactionMessage({
-      //     payerKey: buyer.publicKey,
-      //     recentBlockhash: blockhash2,
-      //     instructions: instructions2
-      //   }).compileToV0Message([lookupTable]);
-      //   // console.log('messageV0', messageV02)
-
-      //   const txn2 = new VersionedTransaction(messageV02);
+  //       const size_of_txn = txn.serialize().length;
+  //       console.log('size_of_txn', size_of_txn)
 
 
-      //   const size_of_txn2 = txn2.serialize().length;
-      //   console.log('size_of_txn2', size_of_txn2)
+  //       txn.sign([wallet.payer]);
+  //       txn.sign([buyer]);
+
+  //       const txId = await connection.sendTransaction(
+  //         txn, {
+  //           skipPreflight: true
+  //         }
+  //       );
+
+  //       console.log(`Transaction ID: ${txId}`);
+
+  //       const _confirm = await confirm(txId);
+  //       console.log('confirm', _confirm);
+  //       console.log('BUYER SOL BALANCE AFTER SINGLE TXN: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
+  //     // const instructions2: TransactionInstruction[] = [
+  //     //   createNftIx,
+  //     //   transferNftIx
+  //     // ];
+
+  //     // const blockhash2 = await connection
+  //     //     .getLatestBlockhash({ commitment: 'max' })
+  //     //     .then((res) => res.blockhash);
+  //     //   const messageV02 = new TransactionMessage({
+  //     //     payerKey: buyer.publicKey,
+  //     //     recentBlockhash: blockhash2,
+  //     //     instructions: instructions2
+  //     //   }).compileToV0Message([lookupTable]);
+  //     //   // console.log('messageV0', messageV02)
+
+  //     //   const txn2 = new VersionedTransaction(messageV02);
 
 
-      //   txn2.sign([wallet.payer]);
-      //   txn2.sign([buyer]);
+  //     //   const size_of_txn2 = txn2.serialize().length;
+  //     //   console.log('size_of_txn2', size_of_txn2)
 
-      //   const txId2 = await connection.sendTransaction(
-      //     txn2,
-      //     {
-      //       skipPreflight: true
-      //     }
-      //   );
 
-      //   console.log(`Transaction ID 2: ${txId2}`);
+  //     //   txn2.sign([wallet.payer]);
+  //     //   txn2.sign([buyer]);
 
-  })  
+  //     //   const txId2 = await connection.sendTransaction(
+  //     //     txn2,
+  //     //     {
+  //     //       skipPreflight: true
+  //     //     }
+  //     //   );
+
+  //     //   console.log(`Transaction ID 2: ${txId2}`);
+
+  // })  
 
 
 
