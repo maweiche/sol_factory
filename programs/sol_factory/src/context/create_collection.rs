@@ -1,6 +1,17 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{
+    solana_program::{
+        sysvar::rent::ID as RENT_ID,
+        program::{invoke, invoke_signed}
+    },
+    prelude::*
+};
+pub use anchor_spl::token_2022::Token2022;
 use crate::state::{Collection, Protocol, Admin};
 use crate::errors::ProtocolError;
+pub use spl_token_2022::{
+    extension::ExtensionType,
+    extension::group_pointer::instruction::initialize as initialize_group_pointer,
+};
 
 #[derive(Accounts)]
 #[instruction(
@@ -33,6 +44,17 @@ pub struct CreateCollection<'info> {
         bump
     )]
     pub admin_state: Account<'info, Admin>,
+    /// CHECK: this is fine since we are handling all the checks and creation in the program.
+    #[account(
+        mut,
+        seeds = [b"mint", collection.key().as_ref()],
+        bump
+    )]
+    pub mint: UncheckedAccount<'info>,
+    #[account(address = RENT_ID)]
+    /// CHECK: this is fine since we are hard coding the rent sysvar.
+    pub rent: UncheckedAccount<'info>,
+    pub token_2022_program: Program<'info, Token2022>,
     #[account(
         seeds = [b"protocol"],
         bump,
@@ -53,6 +75,7 @@ impl<'info> CreateCollection<'info> {
         max_supply: u64,
         price: f32,
         stable_id: String,
+        bumps: CreateCollectionBumps,
     ) -> Result<()> {
 
         /*
@@ -99,6 +122,51 @@ impl<'info> CreateCollection<'info> {
                 stable_id,
             }
         );
+
+        // Step 1: Initialize Account
+        let size = ExtensionType::try_calculate_account_len::<spl_token_2022::state::Mint>(
+            &[
+                ExtensionType::GroupPointer
+            ],
+        ).unwrap();
+
+        let rent = &Rent::from_account_info(&self.rent.to_account_info())?;
+        let lamports = rent.minimum_balance(size );
+
+        let collection_key = self.collection.key();
+        let seeds: &[&[u8]; 3] = &[
+            b"mint",
+            collection_key.as_ref(),
+            &[bumps.mint],
+        ];
+        let signer_seeds = &[&seeds[..]];
+
+        invoke_signed(
+            &solana_program::system_instruction::create_account(
+                &self.admin.key(),
+                &self.mint.key(),
+                lamports,
+                (size).try_into().unwrap(),
+                &spl_token_2022::id(),
+            ),
+            &vec![
+                self.admin.to_account_info(),
+                self.mint.to_account_info(),
+            ],
+            signer_seeds
+        )?;
+
+        invoke(
+            &initialize_group_pointer(
+                &self.token_2022_program.key(),
+                &self.mint.key(),
+                Some(self.admin.key()),
+                Some(self.mint.key()),
+            )?,
+            &vec![
+                self.mint.to_account_info(),
+            ],  
+        )?;
 
         Ok(())
     }

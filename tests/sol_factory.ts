@@ -46,10 +46,10 @@ describe("sol_factory", () => {
 
   const provider = anchor.getProvider();
 
-  const connection = new Connection("https://api.devnet.solana.com", "finalized"); // DEVNET
+  const connection = new Connection("https://distinguished-hidden-ensemble.solana-mainnet.quiknode.pro/c84bf41567901af46ebf2006bfea7a83c047fe1b/", "finalized"); // DEVNET
   // const connection = new Connection("http://localhost:8899", "finalized"); // LOCALHOST
   
-  const programId = new PublicKey("HLZ9fPXguJVJfBvY6moUo8dSdUABS6xNQNR7XiNmF1JR");
+  const programId = new PublicKey("E72hAXTsSJn79Xb9mBB7kmK9VoX3HGNaoCyrqEqCE6dd");
 
   const program = new anchor.Program<SolFactory>(IDL, programId, provider);
   const collectionRefKey = new PublicKey("mwUt7aCktvBeSm8bry6TvqEcNSUGtxByKCbBKfkxAzA");
@@ -61,7 +61,7 @@ describe("sol_factory", () => {
   const confirm = async (signature: string): Promise<string> => {
     const block = await connection.getLatestBlockhash();
     await connection.confirmTransaction({
-      signature,
+      signature, 
       ...block
     })
     return signature
@@ -73,12 +73,17 @@ describe("sol_factory", () => {
   }
 
   const protocol = PublicKey.findProgramAddressSync([Buffer.from('protocol')], program.programId)[0];
+  const test_key = new PublicKey('7wK3jPMYjpZHZAghjersW6hBNMgi9VAGr75AhYRqR2n')
 
-  const stephan_publickey = new PublicKey('H21y6LmZkGmBU9k6YzCRB1MpSnMoXHVtiuCxtTqS87w9');
+  const stephan_publickey = new PublicKey('BPDAKKFoFbeoHUqdMrLNuceCeDhTqsHvkZNmNtSdtnuZ') // stephan collection
+  const tiny_publickey = new PublicKey('3PPNSoZxnz9biNpQqw5EhztVB8EP8zhC75URpSeDCEbC') // tiny rainboot
+  const ira_publickey = new PublicKey('7W2vzzJ1FJmK3F7sct1wbWQuzGa8APeUp8ocHr6uJcmF') // ira collection
   const collection = PublicKey.findProgramAddressSync([Buffer.from('collection'), stephan_publickey.toBuffer()], program.programId)[0];
+  const collection_mint = PublicKey.findProgramAddressSync([Buffer.from('mint'), collection.toBuffer()], program.programId)[0];
 
   //  console.log('all_program_accounts', all_program_accounts)
-  const id = Math.floor(Math.random() * 100000);
+  // const id = Math.floor(Math.random() * 100000);
+  const id = 2025;
   const placeholder = PublicKey.findProgramAddressSync([Buffer.from('placeholder'), collection.toBuffer(), new anchor.BN(id).toBuffer("le", 8)], program.programId)[0];
   const placeholder_mint = PublicKey.findProgramAddressSync([Buffer.from('mint'), placeholder.toBuffer()], program.programId)[0];
 
@@ -95,8 +100,8 @@ describe("sol_factory", () => {
   const buyer_placeholder_mint = PublicKey.findProgramAddressSync([Buffer.from('mint'), buyer_placeholder.toBuffer()], program.programId)[0];
   const buyer_collection_nft = PublicKey.findProgramAddressSync([Buffer.from('ainft'), buyer_collection.toBuffer(), new anchor.BN(id).toBuffer("le", 8)], program.programId)[0];
   const buyer_collection_nft_mint = PublicKey.findProgramAddressSync([Buffer.from('mint'), buyer_collection_nft.toBuffer()], program.programId)[0];
-  let buyerPlaceholderAta = getAssociatedTokenAddressSync(placeholder_mint, buyer.publicKey, false, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID)
-  let buyerNftAta = getAssociatedTokenAddressSync(nft_mint, buyer.publicKey, false, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID)
+  let buyerPlaceholderAta = getAssociatedTokenAddressSync(placeholder_mint, test_key, false, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID)
+  let buyerNftAta = getAssociatedTokenAddressSync(nft_mint, test_key, false, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID)
 
   async function getTokenAccounts(wallet: string, solanaConnection: Connection) {
     const filters:GetProgramAccountsFilter[] = [
@@ -191,7 +196,7 @@ describe("sol_factory", () => {
         commitment: "confirmed",
         filters: [
           memcmp_filter,
-          { dataSize: 164 }
+          // { dataSize: 164 }
         ]
     };
 
@@ -199,7 +204,7 @@ describe("sol_factory", () => {
       programId, 
       get_accounts_config
     );
-    console.log('all_collections', all_nfts)
+    // console.log('all_collections', all_nfts)
 
 
     const all_nfts_decoded = all_nfts.map((nft) => {
@@ -227,7 +232,7 @@ describe("sol_factory", () => {
         }
     })
 
-    console.log('all_nfts_decoded', all_nfts_decoded) 
+    // console.log('all_nfts_decoded', all_nfts_decoded) 
 
     const _tokenid_list = []
     for( let i = 0; i < all_nfts_decoded.length; i++ ) {
@@ -297,6 +302,7 @@ describe("sol_factory", () => {
             console.log('decode', decode)
 
             const collection_data = {
+              pubkey: collection.pubkey.toBase58(),
               reference: decode.reference.toBase58(),
               name: decode.name,
               symbol: decode.symbol,
@@ -451,7 +457,7 @@ describe("sol_factory", () => {
   // });
 
   // it ("Initialize a new Admin", async () => {
-  //   const username = "MATTW";  // 5 characters MAX
+  //   const username = "MATT";  // 5 characters MAX
 
   //   const createAdminIx = await program.methods
   //     .initializeAdminAccount(username)
@@ -470,14 +476,16 @@ describe("sol_factory", () => {
   // });
 
   // it ("Initialize a second Admin", async () => {
-  //   const username = "BAD";  // 5 characters MAX
-  //   const newAdminState = PublicKey.findProgramAddressSync([Buffer.from('admin_state'), buyer.publicKey.toBuffer()], program.programId)[0];
+  //   const admin_keypair = require('../test-wallet/admin.json')
+  //   const admin = Keypair.fromSecretKey(Uint8Array.from(admin_keypair))
+  //   const username = "ADMIN";  // 5 characters MAX
+  //   const newAdminState = PublicKey.findProgramAddressSync([Buffer.from('admin_state'), admin.publicKey.toBuffer()], program.programId)[0];
   //   const createAdminIx = await program.methods
   //     .initializeAdminAccount(username)
   //     .accounts({
   //       admin: wallet.publicKey,
   //       adminState: adminState,
-  //       newAdmin: buyer.publicKey,
+  //       newAdmin: admin.publicKey,
   //       newAdminState: newAdminState,
   //       protocol: protocol,
   //       systemProgram: SystemProgram.programId, //TYPE: PublicKey
@@ -506,60 +514,69 @@ describe("sol_factory", () => {
   //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
   // });
 
-  it("Create Collection", async () => {
-    console.log('collection to string****', collection.toString())
-    console.log('placeholder to string', placeholder.toString())
-    console.log('placeholder mint to string', placeholder_mint.toString())
-    console.log('nft to string', nft.toString())
-    console.log('auth to string', auth.toString())
-    console.log('adminState to string', adminState.toString())
-    console.log('buyerPlaceholderAta to string', buyerPlaceholderAta.toString())
-    const name = "Stephan Collection";
-    const symbol = "STP";
-    const max_supply = new anchor.BN(100);
-    const price = 0.3;
-    const stable_id = "STP2131";
-    const date_i64 = new anchor.BN(Math.floor(Date.now()/1000))
-    const date_plus_10_days = new anchor.BN(Math.floor(Date.now()/1000) + 864000000);
+  // it("Create Collection", async () => {
+  //   console.log('collection to string****', collection.toString())
+  //   console.log('placeholder to string', placeholder.toString())
+  //   console.log('placeholder mint to string', placeholder_mint.toString())
+  //   console.log('nft to string', nft.toString())
+  //   console.log('auth to string', auth.toString())
+  //   console.log('adminState to string', adminState.toString())
+  //   console.log('buyerPlaceholderAta to string', buyerPlaceholderAta.toString())
+
+  //   const name = "The Contours of a Dream";
+  //   const symbol = "COD";
+  //   const max_supply = new anchor.BN(333);
+  //   const price = 0.3;
+  //   const stable_id = "TRB160724";
+  //   const date_i64 = new anchor.BN(	1721149200) // Tonight at 7pm CET
+  //   const sale_end_date = new anchor.BN(1721408400) // Friday at 7pm CET
     
-    const url = "https://stephan.stable-dilution.art/nft/item/generation/1";
+  //   const url = "https://tinyrainboot.stable-dilution.art/nft/item/generation/3";
 
-  // / fix 'https://amin.stable-dilution.art/nft/item/generation/3/'
 
-    try{
+  // // stephan collection -- https://stephan.stable-dilution.art/nft/item/generation/1
+  // // tiny rain -- https://tinyrainboot.stable-dilution.art/nft/item/generation/3
+  // // ira collection -- https://ira.stable-dilution.art/nft/item/generation/1
 
-      const createCollectionIx = await program.methods
-        .createCollection(
-          collectionRefKey,
-          name,
-          symbol,
-          url,
-          date_i64,
-          date_plus_10_days,
-          max_supply,
-          price,
-          stable_id,
-        )
-        .accounts({
-          admin: wallet.publicKey,
-          owner: stephan_publickey,
-          collection: collection,
-          adminState,
-          protocol: protocol,
-          systemProgram: SystemProgram.programId,
-        })
-        .instruction()
+  // // // / fix 'https://amin.stable-dilution.art/nft/item/generation/3/'
 
-      const tx = new anchor.web3.Transaction().add(createCollectionIx);
-      // tx.partialSign(collection_wallet);
-      // console.log('tx partial sign', tx)
-      await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+  //   try{
 
-      // getAllCollections();
-    } catch (error) {
-      console.log('error', error)
-    }
-  });
+  //     const createCollectionIx = await program.methods
+  //       .createCollection(
+  //         collectionRefKey,
+  //         name,
+  //         symbol,
+  //         url,
+  //         date_i64,
+  //         sale_end_date,
+  //         max_supply,
+  //         price,
+  //         stable_id,
+  //       )
+  //       .accounts({
+  //         admin: wallet.publicKey,
+  //         owner: tiny_publickey,
+  //         collection: collection,
+  //         adminState,
+  //         mint: collection_mint,
+  //         rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+  //         token2022Program: TOKEN_2022_PROGRAM_ID,
+  //         protocol: protocol,
+  //         systemProgram: SystemProgram.programId,
+  //       })
+  //       .instruction()
+
+  //     const tx = new anchor.web3.Transaction().add(createCollectionIx);
+  //     // tx.partialSign(collection_wallet);
+  //     // console.log('tx partial sign', tx)
+  //     await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+
+  //     // getAllCollections();
+  //   } catch (error) {
+  //     console.log('error', error)
+  //   }
+  // });
 
   // it("Create Placeholder", async () => {
   //   const modifyComputeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 });
@@ -629,7 +646,7 @@ describe("sol_factory", () => {
   //       payer: wallet.publicKey,
   //       buyer: buyer.publicKey,
   //       collection: collection,
-  //       collectionOwner: collection_wallet.publicKey,
+  //       collectionOwner: stephan_publickey,
   //       buyerMintAta: buyerPlaceholderAta,
   //       placeholder: placeholder,
   //       mint: placeholder_mint,
@@ -645,10 +662,7 @@ describe("sol_factory", () => {
     
   //   await sendAndConfirmTransaction(connection, transaction, [buyer, wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
     
-
-  //   console.log('FEE PAYER SOL BALANCE AFTER: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
-  //   console.log('BUYER SOL BALANCE AFTER: ', ((await connection.getBalance(buyer.publicKey)) / LAMPORTS_PER_SOL));
-  //   console.log('COLLECTION WALLET SOL BALANCE AFTER: ', ((await connection.getBalance(collection_wallet.publicKey)) / LAMPORTS_PER_SOL));
+  //   console.log("PLACEHOLDER_MINT", placeholder_mint.toBase58());
   // });
 
   // it("Create Nft", async () => {
@@ -700,11 +714,24 @@ describe("sol_factory", () => {
   //   setTimeout(() => {
   //     console.log('metadata_json', metadata_json)
   //   }, 2000)
-  //   const areweave_metadata: any = await fetch(metadata_json.metadataUrl)
-  //   console.log('areweave_metadata', areweave_metadata)
-  //   const areweave_json = await areweave_metadata.json()
+  //   let arweave_metadata;
+  //   arweave_metadata = await fetch(metadata_json.metadataUrl)
 
-  //   const nft_name = areweave_json.name;
+  //   console.log('arweave_metadata', arweave_metadata)
+
+  //   let retries = 0;
+  //   while(arweave_metadata.status !== 200 && retries < 5){
+  //     await new Promise(resolve => setTimeout(resolve, 3000));
+  //     arweave_metadata = await fetch(metadata_json.metadataUrl);
+  //     retries++;
+  //   }
+  //   if(arweave_metadata.status == 200){
+    
+    
+  //     const arweave_json = await arweave_metadata.json()
+
+
+  //   const nft_name = arweave_json.name;
   //   console.log('nft_name', nft_name)
   //   const createListingIx = await program.methods
   //   .createNft(
@@ -717,6 +744,7 @@ describe("sol_factory", () => {
   //     admin: wallet.publicKey,
   //     adminState,   
   //     collection: collection,
+  //     collectionMint: collection_mint,
   //     nft: nft,
   //     mint: nft_mint,
   //     auth,
@@ -731,6 +759,7 @@ describe("sol_factory", () => {
   //   await sendAndConfirmTransaction(connection, tx, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
 
   //   console.log('FEE PAYER SOL BALANCE AFTER: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+  //   }
   // });
 
   // it("Transfer Nft and Burn Placeholder", async () => {
@@ -766,6 +795,28 @@ describe("sol_factory", () => {
   //   console.log('FEE PAYER SOL BALANCE AFTER: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
   // });
 
+  // it("Close Collection", async () => {
+  //   console.log('FEE PAYER SOL BALANCE TO START: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+
+  //   const transaction = new Transaction().add(
+  //     await program.methods
+  //     .closeCollection()
+  //     .accounts({
+  //       admin: wallet.publicKey,
+  //       adminState,
+  //       collection: collection,
+  //       owner: stephan_publickey,
+  //       protocol: protocol,
+  //       systemProgram: SystemProgram.programId,
+  //     })
+  //     .instruction()
+  //   );
+  //   transaction.feePayer = wallet.publicKey;
+    
+  //   await sendAndConfirmTransaction(connection, transaction, [wallet.payer], {commitment: "finalized", skipPreflight: true}).then(confirm).then(log);
+
+  //   console.log('FEE PAYER SOL BALANCE AFTER: ', ((await connection.getBalance(wallet.publicKey)) / LAMPORTS_PER_SOL));
+  // });
 
 
 

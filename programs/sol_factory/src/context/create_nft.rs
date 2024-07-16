@@ -8,8 +8,9 @@ pub use anchor_lang::{
 pub use anchor_spl::token_2022::Token2022;
 pub use spl_token_2022::{
     extension::ExtensionType,
-    instruction::{initialize_mint_close_authority, initialize_mint2},
-    extension::metadata_pointer::instruction::initialize as initialize_metadata_pointer
+    instruction::initialize_mint2,
+    extension::metadata_pointer::instruction::initialize as initialize_metadata_pointer,
+    extension::group_member_pointer::instruction::initialize as initialize_group_member_pointer,
 };
 pub use spl_token_metadata_interface::{
     state::{TokenMetadata, Field},
@@ -33,6 +34,13 @@ pub struct CreateNft<'info> {
         bump,
     )] 
     pub collection: Account<'info, Collection>,
+    /// CHECK: this is fine since we are handling all the checks and creation in the program.
+    #[account(
+        mut,
+        seeds = [b"mint", collection.key().as_ref()],
+        bump,
+    )] 
+    pub collection_mint: UncheckedAccount<'info>,
     #[account(
         init,
         payer = admin,
@@ -103,7 +111,8 @@ impl<'info> CreateNft<'info> {
         // Step 1: Initialize Account
         let size = ExtensionType::try_calculate_account_len::<spl_token_2022::state::Mint>(
             &[
-                ExtensionType::MintCloseAuthority,
+                // ExtensionType::MintCloseAuthority,
+                ExtensionType::GroupMemberPointer,
                 // ExtensionType::PermanentDelegate,
                 ExtensionType::MetadataPointer,
                 // ExtensionType::TransferHook,
@@ -146,28 +155,29 @@ impl<'info> CreateNft<'info> {
             signer_seeds
         )?;
         
-        // 2.3: Close Mint Authority, 
+        // 2.3: Add group member pointer
         invoke(
-            &initialize_mint_close_authority(
+            &initialize_group_member_pointer(
                 &self.token_2022_program.key(),
                 &self.mint.key(),
-                Some(&self.auth.key()),
+                Some(self.auth.key()),
+                Some(self.collection_mint.key()), 
             )?,
             &vec![
                 self.mint.to_account_info(),
-            ],
+            ],  
         )?;
         
         // 2.4: Metadata Pointer
         invoke(
             &initialize_metadata_pointer(
-                &self.token_2022_program.key(),
-                &self.mint.key(),
-                Some(self.auth.key()),
-                Some(self.mint.key()),
+            &self.token_2022_program.key(),
+            &self.mint.key(),
+            Some(self.auth.key()),
+            Some(self.mint.key()),
             )?,
             &vec![
-                self.mint.to_account_info(),
+            self.mint.to_account_info(),
             ],
         )?;
 

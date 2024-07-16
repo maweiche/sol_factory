@@ -10,6 +10,9 @@ pub use protocol_setting::*;
 pub mod create_collection;
 pub use create_collection::*;
 
+pub mod close_collection;
+pub use close_collection::*;
+
 pub mod transfer_nft;
 pub use transfer_nft::*;
 

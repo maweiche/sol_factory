@@ -3,23 +3,19 @@ A Solana program built for use in correlation with the [Sol Ai SDK](https://npmj
 
 Below you can find instructions to running the program locally followed by a deeper dive into the program's structure and details.
 
-> [!WARNING]  
-> Sol Factory is still in development and is unstable, there can be minor and major changes at any time.
 
 ## Program ID
 | Cluster      | Program Id |
 | :---        |    :----:   |
-| **Localnet**     | `3W8Yph6SuCtJjWd2gHHsgy8UJ5FBYTiJBefd3n8oAqKG` |
-| **Devnet**  | `3W8Yph6SuCtJjWd2gHHsgy8UJ5FBYTiJBefd3n8oAqKG` |
-| **Mainnet**  | ``  |
+| **Localnet**     | `E72hAXTsSJn79Xb9mBB7kmK9VoX3HGNaoCyrqEqCE6dd` |
+| **Devnet**  | `E72hAXTsSJn79Xb9mBB7kmK9VoX3HGNaoCyrqEqCE6dd` |
+| **Mainnet**  | `E72hAXTsSJn79Xb9mBB7kmK9VoX3HGNaoCyrqEqCE6dd`  |
 
 ## Description
 
 The Sol Factory program is structured for Artists to create on-chain `Collections` that a user can mint a Token-2022 `NFT` from on the Solana blockchain.
 
-The Solana Factory program was built for use with the [Sol Ai SDK](https://npmjs.com).
-
-You can view a baremetal combination of the Program and SDK live on Devnet [here]().
+The Solana Factory program was built for use with the [Sol Ai SDK](https://www.npmjs.com/package/@maweiche/react-sdk).
 
 ## Getting Started
 
@@ -34,14 +30,6 @@ You can view a baremetal combination of the Program and SDK live on Devnet [here
 
 > If you don't have Anchor installed, you can use [Solana Playground](https://beta.solpg.io/) to build and deploy.
 
-
-### Program Dependencies
-
-This program is built with Anchor and requires a minimum version for certain Rust crates:
-
-* **anchor-lang** = { version = "^0.29.0", features = ["init-if-needed"]}
-* **aanchor-spl** = { version = "^0.29.0", features = ["token", "metadata"]}
-* **solana-program** = "^1.17"
 
 ### Installing
 

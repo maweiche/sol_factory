@@ -180,7 +180,7 @@ impl<'info> BuyPlaceholder<'info> {
             let _before_data = self.buyer_mint_ata.data.borrow();
             let _before_state = StateWithExtensions::<TokenAccount>::unpack(&_before_data)?;
         
-            msg!("before mint balance={}", _before_state.base.amount);
+            // msg!("before mint balance={}", _before_state.base.amount);
         }
         
 
@@ -200,7 +200,7 @@ impl<'info> BuyPlaceholder<'info> {
 
         self.collection.total_supply += 1;
 
-        msg!("Total supply: {}", self.collection.total_supply);
+        // msg!("Total supply: {}", self.collection.total_supply);
 
         set_authority(
             CpiContext::new_with_signer(
@@ -220,7 +220,7 @@ impl<'info> BuyPlaceholder<'info> {
             let _after_data = self.buyer_mint_ata.data.borrow();
             let _after_state = StateWithExtensions::<TokenAccount>::unpack(&_after_data)?;
 
-            msg!("after mint balance={}", _after_state.base.amount);
+            // msg!("after mint balance={}", _after_state.base.amount);
 
             require!(_after_state.base.amount == 1, ProtocolError::InvalidBalancePostMint);
         }

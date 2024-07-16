@@ -150,7 +150,7 @@ impl<'info> TransferNft<'info> {
             let _before_data = self.buyer_mint_ata.data.borrow();
             let _before_state = StateWithExtensions::<TokenAccount>::unpack(&_before_data)?;
             
-            msg!("before mint balance={}", _before_state.base.amount);
+            // msg!("before mint balance={}", _before_state.base.amount);
 
             require!(
                 _before_state.base.amount == 0,
@@ -191,7 +191,7 @@ impl<'info> TransferNft<'info> {
             let _after_data = self.buyer_mint_ata.data.borrow();
             let _after_state = StateWithExtensions::<TokenAccount>::unpack(&_after_data)?;
 
-            msg!("after mint balance={}", _after_state.base.amount);
+            // msg!("after mint balance={}", _after_state.base.amount);
 
             require!(_after_state.base.amount == 1, ProtocolError::InvalidBalancePostMint);
         }
@@ -204,7 +204,7 @@ impl<'info> TransferNft<'info> {
 
             require!(_before_burn_state.base.amount > 0, ProtocolError::InvalidBalancePreBurn);
 
-            msg!("before burn balance={}", _before_burn_state.base.amount);
+            // msg!("before burn balance={}", _before_burn_state.base.amount);
         }
 
 
@@ -236,7 +236,7 @@ impl<'info> TransferNft<'info> {
             let _after_burn_data = self.buyer_placeholder_mint_ata.data.borrow();   
             let _after_burn_state = StateWithExtensions::<TokenAccount>::unpack(&_after_burn_data)?;
 
-            msg!("after burn balance={}", _after_burn_state.base.amount);
+            // msg!("after burn balance={}", _after_burn_state.base.amount);
 
             require!(_after_burn_state.base.amount == 0, ProtocolError::InvalidBalancePostBurn);
         }

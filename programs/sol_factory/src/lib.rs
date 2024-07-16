@@ -5,7 +5,7 @@ mod constant;
 mod context;
 use context::*;
 
-declare_id!("HLZ9fPXguJVJfBvY6moUo8dSdUABS6xNQNR7XiNmF1JR");
+declare_id!("E72hAXTsSJn79Xb9mBB7kmK9VoX3HGNaoCyrqEqCE6dd");
 
 #[program]
 pub mod sol_factory {
@@ -40,7 +40,11 @@ pub mod sol_factory {
         price: f32, 
         stable_id: String, 
     ) -> Result<()> {
-        ctx.accounts.create(reference, name, symbol, url, sale_start_time, sale_end_time, max_supply, price, stable_id)
+        ctx.accounts.create(reference, name, symbol, url, sale_start_time, sale_end_time, max_supply, price, stable_id, ctx.bumps)
+    }
+
+    pub fn close_collection(ctx: Context<CloseCollection>) -> Result<()> {
+        ctx.accounts.close()
     }
 
     pub fn create_nft(ctx: Context<CreateNft>, 
