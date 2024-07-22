@@ -1,8 +1,7 @@
-# Sol Factory - Solana Program
-A Solana program built for use in correlation with the [Sol Ai SDK](https://npmjs.com) and Generative AI Art platforms.
+# Vision - Sol Factory a Solana Program
+A Solana program built for use in correlation with the [Vision SDK](https://github.com/playground-solana/vision_sdk) and Generative AI Art platforms.
 
 Below you can find instructions to running the program locally followed by a deeper dive into the program's structure and details.
-
 
 ## Program ID
 | Cluster      | Program Id |
@@ -15,7 +14,7 @@ Below you can find instructions to running the program locally followed by a dee
 
 The Sol Factory program is structured for Artists to create on-chain `Collections` that a user can mint a Token-2022 `NFT` from on the Solana blockchain.
 
-The Solana Factory program was built for use with the [Sol Ai SDK](https://www.npmjs.com/package/@maweiche/react-sdk).
+The Solana Factory program was built for use with the [Vision SDK](https://github.com/playground-solana/vision_sdk).
 
 ## Getting Started
 
@@ -36,8 +35,8 @@ The Solana Factory program was built for use with the [Sol Ai SDK](https://www.n
 To begin, clone the repo and install the necessary dependencies.
 
 ```
-git clone https://github.com/maweiche/sol_factory.git
-cd sol_factory
+git clone https://github.com/playground-solana/vision_program.git
+cd vision_program
 npm install
 ```
 
@@ -91,20 +90,7 @@ Program Id: 4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt
 
 Deploy success
 ```
-4. Change the **Program Id** in the following places:
-
-```rust
-/Anchor.toml
-
-[programs.localnet]
-sol_factory = "4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt"
-```
-
-```rust
-/programs/sol_factory/src/lib
-
-declare_id!("4Fj9kuGYLye3pwCBYaXbuzocEy22gPWT5TcJVJ6JauUt");
-```
+4. Execute `anchor keys sync`
 
 5. Build and deploy the program one more time to register the deployed **Program Id** within the program itself.
 
@@ -438,14 +424,6 @@ Contributors names and contact info
 
 [Matt Weichel](https://github.com/maweiche)
 
-## Version History
-
-* 0.2
-    * Various bug fixes and optimizations
-    * See [commit change]() or See [release history]()
-* 0.1
-    * Initial Release
-
 ## License
 
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
+The Vision - Sol Factory Solana Program is licensed under the [MIT License](https://github.com/playground-solana/vision_program/LICENSE).
